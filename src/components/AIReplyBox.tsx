@@ -31,7 +31,7 @@ export default function AIReplyBox({ sceneId, sceneTitle, onSubmit }: AIReplyBox
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sceneId,
+          sceneSlug: sceneId,
           content: comment,
           emotion: selectedEmotion,
         }),

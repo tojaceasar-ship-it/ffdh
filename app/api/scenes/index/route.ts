@@ -88,6 +88,19 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
     const emotionTags = searchParams.get('emotionTags')?.split(',').filter(Boolean)
+    const slug = searchParams.get('slug')
+
+    // If slug is provided, fetch single scene
+    if (slug) {
+      const allScenes = await sceneIndexer.getIndexedScenes({ limit: 1000 })
+      const scene = allScenes.find((s) => s.slug === slug)
+      
+      return NextResponse.json({
+        success: true,
+        scenes: scene ? [scene] : [],
+        count: scene ? 1 : 0,
+      })
+    }
 
     const scenes = await sceneIndexer.getIndexedScenes({
       limit,

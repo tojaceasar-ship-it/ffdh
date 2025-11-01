@@ -5,8 +5,9 @@ import { z } from 'zod'
 import { feedbackLogger } from '@/services/feedbackLogger'
 
 const commentRequestSchema = z.object({
-  scene_id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  scene_id: z.string().optional(), // Can be UUID or slug
+  sceneSlug: z.string().optional(), // Alternative: slug
+  user_id: z.string().uuid().optional(), // Optional for anonymous comments
   content: z.string().min(2).max(500),
   emotion: z.string().optional(),
 })
@@ -73,7 +74,42 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { scene_id, user_id, content, emotion } = commentRequestSchema.parse(body)
+    const { scene_id, sceneSlug, user_id, content, emotion } = commentRequestSchema.parse(body)
+
+    // Resolve scene_id from slug if needed
+    let resolvedSceneId = scene_id
+    if (!resolvedSceneId && sceneSlug) {
+      // Get scene by slug to get UUID
+      const { data: sceneData } = await supabase
+        .from('scenes')
+        .select('id')
+        .eq('slug', sceneSlug)
+        .single()
+      
+      if (!sceneData) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: 'Scene not found',
+          },
+          { status: 404 }
+        )
+      }
+      resolvedSceneId = sceneData.id
+    }
+
+    if (!resolvedSceneId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'scene_id or sceneSlug is required',
+        },
+        { status: 400 }
+      )
+    }
+
+    // For anonymous comments, use a placeholder user_id
+    const resolvedUserId = user_id || '00000000-0000-0000-0000-000000000000'
 
     // Moderate content
     const moderation = await moderateContent(content)
@@ -111,8 +147,8 @@ export async function POST(request: NextRequest) {
       .from('comments')
       .insert([
         {
-          scene_id,
-          author_id: user_id,
+          scene_id: resolvedSceneId,
+          author_id: resolvedUserId,
           content,
           emotion: detectedEmotion,
           is_toxic: false,
@@ -136,7 +172,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update scene comment count
-    await supabase.rpc('update_scene_comment_count', { scene_id })
+    await supabase.rpc('update_scene_comment_count', { scene_id: resolvedSceneId })
 
     const responseTime = Date.now() - startTime
 
