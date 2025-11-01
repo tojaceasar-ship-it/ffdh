@@ -43,16 +43,14 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <main className="min-h-screen bg-black text-white pt-20">
-        <div className="max-w-2xl mx-auto px-6 py-12 text-center">
-          <h1 className="text-4xl font-headline font-bold mb-6 text-neon-yellow">
-            Koszyk jest pusty
-          </h1>
-          <p className="text-gray-400 mb-8">Dodaj produkty przed przejściem do kasy.</p>
+        <div className="mx-auto max-w-2xl px-6 py-12 text-center">
+          <h1 className="mb-6 text-4xl font-headline font-bold text-neon-yellow">Your cart is empty</h1>
+          <p className="mb-8 text-gray-400">Add pieces from the collection to continue the checkout flow.</p>
           <Link
-            href="/sklep"
-            className="inline-block px-8 py-3 bg-neon-yellow text-black font-bold rounded-lg hover:bg-neon-cyan transition-all"
+            href="/shop"
+            className="inline-block rounded-lg bg-neon-yellow px-8 py-3 font-bold text-black transition-all hover:bg-neon-cyan"
           >
-            Wróć do sklepu
+            Explore the shop
           </Link>
         </div>
       </main>
@@ -62,9 +60,7 @@ export default function CheckoutPage() {
   return (
     <main className="min-h-screen bg-black text-white pt-20">
       <div className="max-w-6xl mx-auto px-6 py-12">
-        <h1 className="text-4xl font-headline font-bold mb-12 text-neon-yellow">
-          🛒 Checkout
-        </h1>
+        <h1 className="mb-12 text-4xl font-headline font-bold text-neon-yellow">🛒 Checkout</h1>
 
         <div className="grid md:grid-cols-2 gap-12">
           {/* Order Summary */}
@@ -73,9 +69,7 @@ export default function CheckoutPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <h2 className="text-2xl font-headline font-bold mb-6 text-neon-cyan">
-              Podsumowanie zamówienia
-            </h2>
+            <h2 className="mb-6 text-2xl font-headline font-bold text-neon-cyan">Order summary</h2>
 
             <div className="space-y-4 mb-8">
               {items.map((item) => (
@@ -103,7 +97,7 @@ export default function CheckoutPage() {
                 <span>Shipping:</span>
                 <span>€10.00</span>
               </div>
-              <div className="flex justify-between text-2xl font-bold text-neon-yellow pt-4">
+              <div className="flex justify-between pt-4 text-2xl font-bold text-neon-yellow">
                 <span>Total:</span>
                 <span>€{(total + 10).toFixed(2)}</span>
               </div>
@@ -117,9 +111,7 @@ export default function CheckoutPage() {
             animate={{ opacity: 1, x: 0 }}
           >
             <div>
-              <h2 className="text-2xl font-headline font-bold mb-6 text-neon-cyan">
-                Metoda płatności
-              </h2>
+              <h2 className="mb-6 text-2xl font-headline font-bold text-neon-cyan">Payment method</h2>
 
               {/* Stripe Option */}
               <motion.button
@@ -132,8 +124,8 @@ export default function CheckoutPage() {
                 whileHover={{ scale: 1.02 }}
               >
                 <div className="text-left">
-                  <h3 className="text-lg font-bold text-white mb-2">💳 Karta kredytowa</h3>
-                  <p className="text-sm text-gray-400">Powered by Stripe</p>
+                  <h3 className="mb-2 text-lg font-bold text-white">💳 Credit / debit</h3>
+                  <p className="text-sm text-gray-400">Processed via Stripe</p>
                 </div>
               </motion.button>
 
@@ -148,7 +140,7 @@ export default function CheckoutPage() {
                 whileHover={{ scale: 1.02 }}
               >
                 <div className="text-left">
-                  <h3 className="text-lg font-bold text-white mb-2">🅿️ PayPal</h3>
+                  <h3 className="mb-2 text-lg font-bold text-white">🅿️ PayPal</h3>
                   <p className="text-sm text-gray-400">Fast & secure checkout</p>
                 </div>
               </motion.button>
@@ -165,11 +157,11 @@ export default function CheckoutPage() {
                 whileHover={paymentMethod ? { scale: 1.02 } : {}}
                 whileTap={paymentMethod ? { scale: 0.98 } : {}}
               >
-                {isLoading ? '⏳ Processing...' : 'Proceed to Payment'}
+                {isLoading ? '⏳ Processing...' : 'Proceed to payment'}
               </motion.button>
 
               <p className="text-center text-sm text-gray-500 mt-4">
-                Your payment is secure and encrypted
+                All payments are encrypted and secured with Stripe
               </p>
             </div>
           </motion.div>

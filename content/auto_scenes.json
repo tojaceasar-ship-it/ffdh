@@ -1,0 +1,83 @@
+[
+  {
+    "slug": "urban-banana-blues",
+    "title": "Urban Banana Blues",
+    "description": "A melancholic journey through city streets with a wise old banana reflecting on lost tropical warmth.",
+    "narrative": "Yellow skin reflects the city lights. A wise old banana sits on a cold concrete bench, watching the world rush by. In this moment of solitude, memories of tropical warmth fade into neon glow. Street graffiti whispers forgotten stories, and the banana feels the weight of urban isolation. Each passing car is a reminder of journeys never taken, dreams never chased. The city breathes, the banana waits.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Urban+Banana+Blues",
+    "emotionTags": ["sadness", "nostalgia", "urban", "solitude"]
+  },
+  {
+    "slug": "strawberry-revolution",
+    "title": "Strawberry Revolution",
+    "description": "When fruits rise up against the system. A tale of rebellion, empowerment, and street justice.",
+    "narrative": "Red fury pulses through the asphalt streets. Strawberries have had enough. No more silent suffering, no more being picked apart. They organize in alleyways, gather in parks, plot their defiance. Tonight, the revolution begins. A single strawberry stands on the barricade, megaphone in hand, calling all fruits to rise. The revolution is sweet, the revolution is fierce. The system trembles as fruit justice takes its stand.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Strawberry+Revolution",
+    "emotionTags": ["anger", "empowerment", "political", "revolution", "hope"]
+  },
+  {
+    "slug": "midnight-mango-mystery",
+    "title": "Midnight Mango Mystery",
+    "description": "A noir detective tale where a mango PI investigates strange disappearances in the fruit underworld.",
+    "narrative": "It was a dark night in Fruit City. The moon hid behind clouds as Detective Mango lit another cigarette. His office smelled of desperation and cheap coffee. A fruit had gone missing, and the trail led deep into the underground. Neon signs blinked warnings in languages only fruits understood. The mango adjusted his fedora and stepped into the shadows where truth hides behind lies, where secrets rot like forgotten fruit.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Midnight+Mango+Mystery",
+    "emotionTags": ["mystery", "dark", "investigation", "suspense"]
+  },
+  {
+    "slug": "orange-dreams-of-freedom",
+    "title": "Orange Dreams of Freedom",
+    "description": "An orange's journey from industrial farm to liberated street artist, seeking identity beyond labels.",
+    "narrative": "Freedom tastes like spray paint and forgotten freight yards. Orange peeled away from the industrial cycle, escaped the conveyor belt of conformity. Now street art blooms on forgotten walls, each mural a cry for independence. The orange found voice in color, identity in rebellion. Society wanted to squeeze it dry, but Orange chose to burst open instead, spilling dreams across the urban canvas.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Orange+Dreams+of+Freedom",
+    "emotionTags": ["hope", "freedom", "art", "identity", "rebellion"]
+  },
+  {
+    "slug": "grape-gangsters-goodbye",
+    "title": "Grape Gangster's Goodbye",
+    "description": "A tale of loyalty, betrayal, and the price of staying true in the fruit underworld.",
+    "narrative": "Last drink at the juice bar. Grape knew the code: honor among thieves, loyalty among crew. But tonight, a deal went wrong. Someone talked, someone broke faith. The grape raised a glass to fallen friends, memories of heists and close calls flooding back. There's no going back now, no fixing what's been broken. Sometimes the sweetest fruits bear the bitterest farewells.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Grape+Gangsters+Goodbye",
+    "emotionTags": ["nostalgia", "loss", "loyalty", "regret", "gangster"]
+  },
+  {
+    "slug": "watermelon-summer-love",
+    "title": "Watermelon Summer Love",
+    "description": "A sweet, fleeting romance that blooms in the heat of an endless summer.",
+    "narrative": "Seeds scattered across park grass, juice dripping down chins. Watermelon and Pineapple met under August sun, innocent and ripe with possibility. Laughter echoed through neighborhood streets, secrets shared over shared fruit. But summer ends, seasons change. Their love was sweet while it lasted, a perfect bite of happiness before the cold returned. Sometimes memories taste sweeter than the moment itself.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Watermelon+Summer+Love",
+    "emotionTags": ["love", "joy", "nostalgia", "summer", "romance"]
+  },
+  {
+    "slug": "kiwi-identity-crisis",
+    "title": "Kiwi Identity Crisis",
+    "description": "An existential journey of a fruit struggling to define itself in a world of rigid categories.",
+    "narrative": "Am I a fruit or a berry? A bird or a food? Kiwi stood at the crossroads of identity, torn between worlds that refused simple definitions. Society demanded labels, boxes to check, categories to fit. But Kiwi was fuzzy on the outside, complex on the inside. Labels don't stick to those who refuse to be stuck. Tonight, Kiwi chooses self-definition over societal approval.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Kiwi+Identity+Crisis",
+    "emotionTags": ["introspection", "identity", "confusion", "self-discovery"]
+  },
+  {
+    "slug": "pineapple-power-move",
+    "title": "Pineapple Power Move",
+    "description": "A calculated rise to the top of the fruit hierarchy through ambition and sharp edges.",
+    "narrative": "The corporate ladder is made of spines and ambition. Pineapple climbed each rung with precision, cutting competitors who dared stand in the way. Boardrooms trembled at the arrival, deals sweetened by the promise of power. This fruit learned early: success requires sharp edges, a tough exterior, and the wisdom to protect what's inside. The crown is earned, not given.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Pineapple+Power+Move",
+    "emotionTags": ["ambition", "power", "strategy", "competition"]
+  },
+  {
+    "slug": "blueberry-hustler-hustle",
+    "title": "Blueberry Hustler Hustle",
+    "description": "The daily grind of a small fruit making it big in a world built for giants.",
+    "narrative": "Small but mighty, Blueberry hustles every day. From dawn till dark, selling dreams by the box, promising sweetness in a bitter world. Size don't matter when heart is huge. Every sale is a victory, every customer a story. The hustle never sleeps, never stops, never backs down. One day, these streets will remember the little fruit that dreamed big.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Blueberry+Hustler+Hustle",
+    "emotionTags": ["determination", "ambition", "perseverance", "grit"]
+  },
+  {
+    "slug": "apple-lovers-lament",
+    "title": "Apple Lover's Lament",
+    "description": "A bittersweet story of perfect love found too late, corrupted by time and circumstance.",
+    "narrative": "They met when both were bruised, imperfect. Apple had been dropped, discarded, thrown aside. Pear understood the pain of rejection, the sting of being less than perfect. Together they found beauty in flaws, sweetness in shared scars. But perfect timing is a myth. They were ripe for each other, yet the world wasn't ready. Sometimes love isn't enough when circumstances refuse to align.",
+    "imageUrl": "https://via.placeholder.com/1920x1080?text=Apple+Lovers+Lament",
+    "emotionTags": ["love", "sadness", "timing", "melancholy", "imperfection"]
+  }
+]
+

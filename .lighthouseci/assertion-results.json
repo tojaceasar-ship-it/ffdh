@@ -1,0 +1,66 @@
+[
+  {
+    "name": "minScore",
+    "expected": 0.8,
+    "actual": 0.75,
+    "values": [
+      0.75,
+      0.74,
+      0.67
+    ],
+    "operator": ">=",
+    "passed": false,
+    "auditProperty": "performance",
+    "auditId": "categories",
+    "level": "error",
+    "url": "http://localhost:3000/"
+  },
+  {
+    "name": "minScore",
+    "expected": 0.9,
+    "actual": 0.89,
+    "values": [
+      0.89,
+      0.89,
+      0.89
+    ],
+    "operator": ">=",
+    "passed": false,
+    "auditProperty": "accessibility",
+    "auditId": "categories",
+    "level": "error",
+    "url": "http://localhost:3000/"
+  },
+  {
+    "name": "minScore",
+    "expected": 0.8,
+    "actual": 0.74,
+    "values": [
+      0.73,
+      0.74,
+      0.74
+    ],
+    "operator": ">=",
+    "passed": false,
+    "auditProperty": "performance",
+    "auditId": "categories",
+    "level": "error",
+    "url": "http://localhost:3000/shop"
+  },
+  {
+    "name": "minScore",
+    "expected": 0.8,
+    "actual": 0.78,
+    "values": [
+      0.78,
+      0.75,
+      0.74
+    ],
+    "operator": ">=",
+    "passed": false,
+    "auditProperty": "performance",
+    "auditId": "categories",
+    "level": "error",
+    "url": "http://localhost:3000/product/banana-man-tee"
+  }
+]

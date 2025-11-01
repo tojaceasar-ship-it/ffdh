@@ -1,3 +1,54 @@
+# FFDH-RADAR · Deployment Readiness (Full Run)
+
+Date: 2025-11-01
+Scope: main + rewir
+Mode: Execute and report (no deploy)
+
+## Summary
+- Build: PASS
+- Type-check: PASS
+- Lint: PASS
+- Unit: N/A
+- E2E (Playwright): 130 passed, 5 skipped, 0 failed (post-fixes)
+- A11y (pa11y-ci): FAIL (contrast + button name)
+- Lighthouse CI: PERF under threshold on 3 targets; A11y slightly under on home
+- Risk: MEDIUM
+
+## Key Findings
+
+### Security/Config
+- Secrets sanitized in `scripts/create-env-files.ps1` and file added to `.gitignore`.
+- Stripe API init fixed to avoid invalid apiVersion typing.
+
+### SSR/ISR/ENV
+- ENV coverage OK; runtime health endpoint reports presence as expected.
+- Heavy client usage; `generateMetadata` for product uses safe fallbacks.
+
+### Tests
+- E2E stabilized by deterministic navigation (href-based) and stricter selectors.
+- Remaining flakiness eliminated without altering app logic.
+
+### Accessibility (pa11y)
+- Missing accessible name for mobile menu `<button>` in navbar.
+- Low contrast text in footer (`text-gray-500`) vs background.
+- Missing `<title>` on `/shop/cart` in some paths.
+
+### Lighthouse (lhci)
+- Performance below target 0.8 on:
+  - `/` ~0.75
+  - `/shop` ~0.74
+  - `/product/banana-man-tee` ~0.78
+- Accessibility on `/` reported 0.89 (target 0.90).
+
+## Recommendations (High-level)
+- Add `aria-label="Open menu"` to navbar mobile toggle.
+- Increase footer text contrast (e.g., `text-gray-400` → `text-gray-300` or brighter).
+- Ensure page titles on `/shop/cart` via metadata export.
+- Perf: enable image `loading="lazy"`, reduce LCP on hero, consider font-display swap, audit third-party (framer-motion effects on first paint).
+
+## Risk Level
+MEDIUM — A11y and Perf thresholds not yet met. Functional correctness and stability are good.
+
 # FFDH-RADAR: Project Status Assessment
 
 **Timestamp**: 2025-11-01 14:30 UTC  

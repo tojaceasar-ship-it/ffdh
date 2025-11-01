@@ -1,0 +1,173 @@
+### Webhook Mock Payloads for Testing
+### Use with curl, httpie, or REST Client VSCode extension
+
+@baseUrl = http://localhost:3000
+@stripeSecret = whsec_TEST_SECRET
+@printfulSecret = TEST_PRINTFUL_SECRET
+
+### ============================================================================
+### STRIPE WEBHOOKS
+### ============================================================================
+
+### Stripe: Checkout Session Completed
+POST {{baseUrl}}/api/stripe/webhook
+Content-Type: application/json
+stripe-signature: t=1234567890,v1=test_signature
+
+{
+  "id": "evt_test_webhook",
+  "object": "event",
+  "type": "checkout.session.completed",
+  "data": {
+    "object": {
+      "id": "cs_test_session",
+      "object": "checkout.session",
+      "amount_total": 2999,
+      "currency": "eur",
+      "customer": "cus_test",
+      "payment_status": "paid",
+      "metadata": {
+        "order_id": "order_test_123"
+      }
+    }
+  }
+}
+
+### Stripe: Payment Intent Succeeded
+POST {{baseUrl}}/api/stripe/webhook
+Content-Type: application/json
+stripe-signature: t=1234567890,v1=test_signature
+
+{
+  "id": "evt_test_webhook",
+  "object": "event",
+  "type": "payment_intent.succeeded",
+  "data": {
+    "object": {
+      "id": "pi_test_payment",
+      "object": "payment_intent",
+      "amount": 2999,
+      "currency": "eur",
+      "status": "succeeded",
+      "metadata": {
+        "order_id": "order_test_123"
+      }
+    }
+  }
+}
+
+### ============================================================================
+### PRINTFUL WEBHOOKS
+### ============================================================================
+
+### Printful: Order Created
+POST {{baseUrl}}/api/printful/webhook
+Content-Type: application/json
+x-printful-signature: test_signature
+
+{
+  "type": "order_created",
+  "data": {
+    "id": "12345678",
+    "external_id": "order_test_123",
+    "status": "pending",
+    "recipient": {
+      "name": "Test User",
+      "address1": "123 Test St",
+      "city": "Test City",
+      "state": "Test State",
+      "zip": "12345",
+      "country": "US"
+    },
+    "items": [
+      {
+        "id": "item_1",
+        "name": "Test Product",
+        "quantity": 1,
+        "price": "29.99"
+      }
+    ]
+  }
+}
+
+### Printful: Order Updated
+POST {{baseUrl}}/api/printful/webhook
+Content-Type: application/json
+x-printful-signature: test_signature
+
+{
+  "type": "order_updated",
+  "data": {
+    "id": "12345678",
+    "external_id": "order_test_123",
+    "status": "shipped",
+    "tracking_number": "TRACK123456",
+    "tracking_url": "https://tracking.example.com/TRACK123456"
+  }
+}
+
+### Printful: Order Failed
+POST {{baseUrl}}/api/printful/webhook
+Content-Type: application/json
+x-printful-signature: test_signature
+
+{
+  "type": "order_failed",
+  "data": {
+    "id": "12345678",
+    "external_id": "order_test_123",
+    "status": "failed",
+    "failure_reason": "Insufficient inventory"
+  }
+}
+
+### ============================================================================
+### MOCK MODE (Signature Check Disabled)
+### ============================================================================
+
+### Stripe Mock (No Signature Check)
+POST {{baseUrl}}/api/stripe/webhook
+Content-Type: application/json
+
+{
+  "id": "evt_mock",
+  "type": "checkout.session.completed",
+  "data": {
+    "object": {
+      "id": "cs_mock",
+      "payment_status": "paid",
+      "amount_total": 2999,
+      "currency": "eur"
+    }
+  }
+}
+
+### Printful Mock (No Signature Check)
+POST {{baseUrl}}/api/printful/webhook
+Content-Type: application/json
+
+{
+  "type": "order_created",
+  "data": {
+    "id": "12345",
+    "external_id": "order_mock",
+    "status": "pending"
+  }
+}
+
+### ============================================================================
+### CURl EXAMPLES
+### ============================================================================
+
+### Run Stripe checkout webhook via curl
+### curl -X POST http://localhost:3000/api/stripe/webhook \
+###   -H "Content-Type: application/json" \
+###   -H "stripe-signature: t=1234567890,v1=test" \
+###   -d @scripts/mock-payloads/stripe-checkout.json
+
+### Run Printful order webhook via curl
+### curl -X POST http://localhost:3000/api/printful/webhook \
+###   -H "Content-Type: application/json" \
+###   -H "x-printful-signature: test" \
+###   -d @scripts/mock-payloads/printful-order.json
+

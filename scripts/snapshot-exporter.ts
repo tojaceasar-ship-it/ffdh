@@ -113,5 +113,6 @@ if (require.main === module) {
   exportSnapshot(buildStage)
 }
 
-export default { exportSnapshot }
+export const snapshotExporter = { exportSnapshot }
+export default snapshotExporter
 

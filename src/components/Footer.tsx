@@ -10,20 +10,20 @@ export default function Footer() {
   const footerLinks = {
     shop: [
       { label: 'All Products', href: routes.shop },
-      { label: 'New Releases', href: routes.shop },
-      { label: 'Lookbook', href: routes.shop },
-      { label: 'Sizing Guide', href: routes.shop },
+      { label: 'Limited Drops', href: `${routes.shop}?filter=limited` },
+      { label: 'Lookbook', href: routes.rewir },
+      { label: 'Gift Cards', href: routes.shop },
     ],
     rewir: [
       { label: 'Explore Scenes', href: routes.rewir },
-      { label: 'How It Works', href: routes.rewir },
-      { label: 'Submit Scene', href: routes.rewir },
+      { label: 'Scene Generator', href: routes.rewir },
+      { label: 'Characters', href: '/characters' },
     ],
     company: [
-      { label: 'About Us', href: routes.about },
-      { label: 'Contact', href: routes.home },
-      { label: 'Shipping', href: routes.checkout },
-      { label: 'Returns', href: routes.checkout },
+      { label: 'About', href: routes.about },
+      { label: 'Contact', href: routes.contact },
+      { label: 'Terms', href: routes.terms },
+      { label: 'Privacy', href: routes.privacy },
     ],
   }
 
@@ -125,18 +125,18 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-700 text-sm">
               © {currentYear} Fruits From Da Hood. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm">
-              <Link href="#" className="text-gray-500 hover:text-neon-yellow transition-colors">
+              <Link href={routes.privacy} className="text-gray-700 transition-colors hover:text-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
                 Privacy Policy
               </Link>
-              <Link href="#" className="text-gray-500 hover:text-neon-yellow transition-colors">
+              <Link href={routes.terms} className="text-gray-700 transition-colors hover:text-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
                 Terms of Service
               </Link>
-              <Link href="#" className="text-gray-500 hover:text-neon-yellow transition-colors">
-                Cookie Policy
+              <Link href={routes.contact} className="text-gray-700 transition-colors hover:text-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+                Contact
               </Link>
             </div>
           </div>

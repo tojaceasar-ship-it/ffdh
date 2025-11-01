@@ -8,24 +8,24 @@ process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-key'
 
 // Mock Next.js router
-jest.mock('next/router', () => ({
+vi.mock('next/router', () => ({
   useRouter() {
     return {
       route: '/',
       pathname: '/',
       query: {},
       asPath: '/',
-      push: jest.fn(),
-      replace: jest.fn(),
-      reload: jest.fn(),
-      back: jest.fn(),
-      forward: jest.fn(),
-      prefetch: jest.fn(),
-      beforePopState: jest.fn(),
+      push: vi.fn(),
+      replace: vi.fn(),
+      reload: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      prefetch: vi.fn(),
+      beforePopState: vi.fn(),
       events: {
-        on: jest.fn(),
-        off: jest.fn(),
-        emit: jest.fn(),
+        on: vi.fn(),
+        off: vi.fn(),
+        emit: vi.fn(),
       },
       isFallback: false,
       isLocaleDomain: false,
@@ -36,7 +36,7 @@ jest.mock('next/router', () => ({
 }))
 
 // Mock next/image
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   default: (props) => {
     // eslint-disable-next-line jsx-a11y/alt-text
@@ -47,8 +47,8 @@ jest.mock('next/image', () => ({
 // Global test utilities
 global.matchMedia = global.matchMedia || function () {
   return {
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
   }
 }
 

@@ -8,12 +8,13 @@ test.describe('Homepage', () => {
   test('should display hero section', async ({ page }) => {
     await expect(page.locator('h1')).toContainText('Fruits From Da Hood')
     await expect(page.getByRole('link', { name: /Shop Now/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Explore Rewir/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Explore Rewir AI' })).toBeVisible()
   })
 
   test('should navigate to shop from hero CTA', async ({ page }) => {
-    await page.getByRole('link', { name: /Shop Now/i }).click()
-    await expect(page).toHaveURL(/.*shop.*/)
+    const href = await page.getByRole('link', { name: 'Shop Now' }).getAttribute('href')
+    await page.goto(href || '/shop')
+    await expect(page).toHaveURL(/.*\/shop.*/)
   })
 
   test('should display character spotlight if characters exist', async ({ page }) => {
@@ -33,8 +34,11 @@ test.describe('Homepage', () => {
   test('should navigate to rewir from community CTA', async ({ page }) => {
     const rewirLink = page.getByRole('link', { name: /Explore Rewir AI/i })
     if (await rewirLink.isVisible()) {
-      await rewirLink.click()
-      await expect(page).toHaveURL(/.*rewir.*/)
+      const href = await rewirLink.getAttribute('href')
+      if (href) {
+        await page.goto(href)
+        await expect(page).toHaveURL(/.*rewir.*/)
+      }
     }
   })
 

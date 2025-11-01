@@ -10,7 +10,7 @@
 ## 📋 CURRENT STATE ANALYSIS
 
 ### ✅ Already Implemented
-- **Pages**: `/`, `/rewir`, `/scena/[slug]`, `/sklep`, `/checkout`, `/success`
+- **Pages**: `/`, `/rewir`, `/rewir/[slug]`, `/shop`, `/product/[slug]`, `/checkout`, `/success`
 - **API Routes**: `/api/ai-reply`, `/api/comments`, `/api/scenes/index`, `/api/checkout`, `/api/stripe/webhook`, `/api/printful/webhook`
 - **Core Services**: `sceneIndexer.ts`, `promptContext.ts`, `aiService.ts`, `feedbackLogger.ts`
 - **UI Components**: `Navbar`, `SceneCard`, `CartSidebar`, `HeroSection`, `CharacterSpotlight`, `CommunityShowcase`, etc.
@@ -74,8 +74,8 @@
 - ✅ `/` - Homepage (EXISTS)
 - ✅ `/rewir` - Rewir listing (EXISTS)
 - ✅ `/rewir/[sceneId]` - Scene detail (NEEDS: rename `/scena/[slug]` to `/rewir/[sceneId]`)
-- ✅ `/sklep` - Shop (EXISTS)
-- ✅ `/sklep/[slug]` - Product detail (MISSING - needs creation)
+- ✅ `/shop` - Shop (EXISTS)
+- ✅ `/product/[slug]` - Product detail (MISSING - needs creation)
 - ✅ `/o-nas` - About page (MISSING)
 - ✅ `/404` - Not found (EXISTS)
 

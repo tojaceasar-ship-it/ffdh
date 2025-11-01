@@ -19,13 +19,30 @@ const commentRequestSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const sceneId = searchParams.get('scene_id')
+    let sceneId = searchParams.get('scene_id')
+    const sceneSlug = searchParams.get('scene_slug')
+
+    if (!sceneId && sceneSlug) {
+      const { data: sceneRow, error: sceneError } = await supabase
+        .from('scenes')
+        .select('id')
+        .eq('slug', sceneSlug)
+        .maybeSingle()
+
+      if (sceneError) {
+        console.error('Failed to resolve scene slug to id', sceneError)
+      }
+
+      if (sceneRow?.id) {
+        sceneId = sceneRow.id
+      }
+    }
 
     if (!sceneId) {
       return NextResponse.json(
         {
           success: false,
-          message: 'scene_id is required',
+          message: 'scene_id or scene_slug is required',
         },
         { status: 400 }
       )

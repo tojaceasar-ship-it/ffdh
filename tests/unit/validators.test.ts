@@ -144,7 +144,7 @@ describe('Validators', () => {
     it('should reject invalid comments', () => {
       expect(isValidComment('')).toEqual({
         isValid: false,
-        errors: ['Comment cannot be empty'],
+        errors: ['Comment cannot be empty', 'Comment must be at least 2 characters'],
       })
 
       expect(isValidComment('x')).toEqual({

@@ -22,6 +22,9 @@
 rm -rf .next node_modules/.cache
 npm install
 npm run build
+
+# If you see Sanity config errors ensure `sanity.config.ts`
+# still exports `structure` and begins with 'use client'.
 ```
 
 ### Environment Variables Missing
@@ -42,6 +45,9 @@ npm run sanity:dev
 ```bash
 # Test Stripe webhooks locally
 stripe listen --forward-to localhost:3000/api/stripe/webhook
+
+# If `/api/checkout` returns `{ mock: true }` in production,
+# verify Stripe keys and redeploy once restored.
 ```
 
 ## 📊 Monitoring
@@ -49,6 +55,7 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 ### Key Metrics to Monitor
 - **Response Times**: < 2.5s LCP
 - **Error Rates**: < 1% 5xx errors
+- **Rewir reaction throughput**: ensure Supabase counts update within 5s
 - **Conversion Rate**: Track checkout completion
 - **Webhook Success**: 100% delivery rate
 
@@ -95,6 +102,7 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 - Static pages: ISR (1 hour)
 - API responses: 5 minutes
 - Images: CDN with cache headers
+- Local fallbacks: `content/auto_scenes.json` and `content/auto_products.json`
 
 ## 🔄 Backup & Recovery
 

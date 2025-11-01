@@ -31,9 +31,14 @@ yarn-error.log*
 
 # Local env files
 .env*.local
+scripts/create-env-files.ps1
+
+# Secrets directory
+.secrets/
 
 # Vercel
 .vercel
+.env.vercel
 
 # TypeScript
 *.tsbuildinfo

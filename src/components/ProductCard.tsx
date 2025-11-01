@@ -1,11 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { useAppDispatch } from '@/store'
 import { addToCart } from '@/store/slices/cart.slice'
 
 interface ProductCardProps {
   id: string
+  slug: string
   variantId: string
   name: string
   price: number
@@ -17,6 +19,7 @@ interface ProductCardProps {
 
 export default function ProductCard({
   id,
+  slug,
   variantId,
   name,
   price,
@@ -44,6 +47,8 @@ export default function ProductCard({
 
   return (
     <motion.div
+      data-testid="product-card"
+      data-sold-out={isSoldOut ? 'true' : 'false'}
       className="relative group"
       whileHover={{ scale: isSoldOut ? 1 : 1.05 }}
       transition={{ duration: 0.3 }}
@@ -51,7 +56,7 @@ export default function ProductCard({
       {/* Card Container */}
       <div className="bg-black border-2 border-neon-yellow/30 rounded-lg overflow-hidden hover:border-neon-yellow/80 transition-all">
         {/* Image */}
-        <div className="relative h-64 bg-gray-900 overflow-hidden">
+        <Link href={`/product/${slug}`} className="relative block h-64 bg-gray-900 overflow-hidden">
           <img
             src={image}
             alt={name}
@@ -76,29 +81,30 @@ export default function ProductCard({
               Only {stock} left
             </div>
           )}
-        </div>
+        </Link>
 
         {/* Content */}
         <div className="p-4">
-          <h3 className="text-white font-headline font-bold mb-2 line-clamp-2">
+          <Link href={`/product/${slug}`} className="text-white font-headline font-bold mb-2 line-clamp-2 block hover:text-neon-yellow transition-colors">
             {name}
-          </h3>
+          </Link>
 
           <p className="text-neon-yellow text-lg font-bold mb-4">
             €{price.toFixed(2)}
           </p>
 
           <motion.button
+            data-testid="add-to-cart"
             onClick={handleAddToCart}
             disabled={isSoldOut}
-            className={`w-full py-2 px-4 rounded-lg font-cta font-bold transition-all ${
+            className={`w-full py-2 px-4 rounded-lg font-cta font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ${
               isSoldOut
-                ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                : 'bg-neon-yellow text-black hover:bg-neon-cyan hover:scale-105'
+                ? 'bg-neutral-700 text-neutral-400 cursor-not-allowed opacity-60'
+                : 'bg-brand-600 text-white hover:bg-brand-700 focus:ring-2 focus:ring-brand-600'
             }`}
             whileTap={{ scale: isSoldOut ? 1 : 0.95 }}
           >
-            {isSoldOut ? 'Sold Out' : 'Add to Cart'}
+            {isSoldOut ? 'Sold Out' : 'Add to cart'}
           </motion.button>
         </div>
       </div>

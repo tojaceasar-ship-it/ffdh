@@ -26,7 +26,8 @@ test.describe('Checkout Flow', () => {
 
     expect(response.status()).toBeGreaterThanOrEqual(400)
     const data = await response.json()
-    expect(data).toHaveProperty('errors')
+    // Our API returns { error: 'Validation failed', details: [...] }
+    expect(data).toHaveProperty('details')
   })
 })
 

@@ -1,0 +1,5 @@
+{
+  "http://localhost:3000/": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1762020900495-1890.report.html",
+  "http://localhost:3000/shop": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1762020901355-74161.report.html",
+  "http://localhost:3000/product/banana-man-tee": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1762020901944-81980.report.html"
+}

@@ -91,6 +91,19 @@ describe('sceneIndexer', () => {
         title: 'Test Scene',
       }
 
+      // Mock supabase to ensure it doesn't interfere
+      const mockSupabase = {
+        from: vi.fn().mockReturnThis(),
+        upsert: vi.fn().mockReturnThis(),
+        select: vi.fn().mockReturnThis(),
+        single: vi.fn().mockResolvedValue({
+          data: null,
+          error: null,
+        }),
+      }
+
+      vi.spyOn(supabaseModule, 'supabase', 'get').mockReturnValue(mockSupabase as any)
+
       const result = await sceneIndexer.indexScene(mockScene as any)
 
       expect(result).toBeNull()
@@ -232,7 +245,10 @@ describe('sceneIndexer', () => {
         from: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
-        contains: vi.fn().mockReturnThis(),
+        contains: vi.fn().mockResolvedValue({
+          data: mockScenes,
+          error: null,
+        }),
         limit: vi.fn().mockResolvedValue({
           data: mockScenes,
           error: null,

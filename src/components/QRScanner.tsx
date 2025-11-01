@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { Html5Qrcode } from 'html5-qrcode'
 
 interface QRScannerProps {
   onScan?: (data: string) => void
@@ -13,28 +14,90 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   const [isScanning, setIsScanning] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [manualCode, setManualCode] = useState('')
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const [cameraError, setCameraError] = useState<string | null>(null)
+  const html5QrCodeRef = useRef<Html5Qrcode | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    // Camera access would require external library like html5-qrcode
-    // For MVP, we'll use manual input fallback
-    setIsScanning(false)
-    setError('Camera scanning requires additional setup. Please use manual code entry.')
+    // Cleanup on unmount
+    return () => {
+      if (html5QrCodeRef.current) {
+        html5QrCodeRef.current
+          .stop()
+          .then(() => {
+            html5QrCodeRef.current?.clear()
+          })
+          .catch(() => {})
+      }
+    }
   }, [])
+
+  const stopScanning = () => {
+    if (html5QrCodeRef.current) {
+      html5QrCodeRef.current
+        .stop()
+        .then(() => {
+          html5QrCodeRef.current?.clear()
+          html5QrCodeRef.current = null
+          setIsScanning(false)
+        })
+        .catch((err: unknown) => {
+          console.error('Error stopping scanner:', err)
+          html5QrCodeRef.current = null
+          setIsScanning(false)
+        })
+    }
+  }
+
+  const startScanning = async () => {
+    try {
+      const html5QrCode = new Html5Qrcode('qr-reader')
+      html5QrCodeRef.current = html5QrCode
+
+      await html5QrCode.start(
+        { facingMode: 'environment' },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+        },
+        (decodedText: string) => {
+          handleQRSuccess(decodedText)
+          stopScanning()
+        },
+        (_errorMessage: string) => {
+          // Ignore errors during scanning (continuous scanning)
+        }
+      )
+      setIsScanning(true)
+      setCameraError(null)
+    } catch (err) {
+      console.error('Camera error:', err)
+      const errorMsg = err instanceof Error ? err.message : 'Camera access denied or unavailable'
+      setCameraError(errorMsg)
+      setIsScanning(false)
+      html5QrCodeRef.current = null
+    }
+  }
+
+  const handleQRSuccess = (decodedText: string) => {
+    // Parse scene slug from QR data (support both /scena/ and /rewir/)
+    const sceneSlug = decodedText
+      .trim()
+      .replace(/^.*\/(scena|rewir)\//, '')
+      .replace(/[#?].*$/, '')
+
+    if (sceneSlug) {
+      router.push(`/rewir/${sceneSlug}`)
+      onScan?.(sceneSlug)
+      onClose?.()
+    } else {
+      setError('Invalid scene code. Expected URL format with scene slug.')
+    }
+  }
 
   const handleManualSubmit = () => {
     if (!manualCode.trim()) return
-
-    // Parse scene slug from QR data
-    const sceneSlug = manualCode.trim().replace(/^.*\/scena\//, '').replace(/[#?].*$/, '')
-    
-    if (sceneSlug) {
-      router.push(`/scena/${sceneSlug}`)
-      onScan?.(sceneSlug)
-    } else {
-      setError('Invalid scene code. Format: /scena/[scene-slug]')
-    }
+    handleQRSuccess(manualCode)
   }
 
   return (
@@ -54,14 +117,40 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           </div>
         )}
 
-        {/* Video preview (would show camera feed) */}
-        <div className="mb-6 bg-gray-900 rounded-lg aspect-square flex items-center justify-center border-2 border-dashed border-gray-700">
-          <div className="text-center">
-            <div className="text-6xl mb-4">📷</div>
-            <p className="text-gray-400 text-sm">Camera scanning not available</p>
-            <p className="text-gray-500 text-xs mt-2">Use manual code entry below</p>
-          </div>
+        {/* QR Scanner */}
+        <div className="mb-6 bg-gray-900 rounded-lg aspect-square flex items-center justify-center border-2 border-dashed border-gray-700 overflow-hidden relative">
+          <div id="qr-reader" className="w-full h-full" />
+          {!isScanning && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+              <div className="text-center">
+                <div className="text-6xl mb-4">📷</div>
+                <p className="text-gray-400 text-sm">Camera scanning ready</p>
+                <button
+                  onClick={startScanning}
+                  className="mt-4 px-4 py-2 bg-neon-yellow text-black rounded-lg font-bold hover:bg-neon-cyan transition-colors"
+                >
+                  Start Camera
+                </button>
+              </div>
+            </div>
+          )}
+          {cameraError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-red-900/20 backdrop-blur-sm">
+              <p className="text-red-400 text-sm text-center px-4">{cameraError}</p>
+            </div>
+          )}
         </div>
+
+        {isScanning && (
+          <div className="mb-4 text-center">
+            <button
+              onClick={stopScanning}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition-colors"
+            >
+              Stop Scanning
+            </button>
+          </div>
+        )}
 
         {/* Manual entry */}
         <div className="mb-6">

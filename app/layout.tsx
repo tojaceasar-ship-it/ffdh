@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { Orbitron, Inter, Rajdhani, Bungee } from 'next/font/google'
 import Providers from '../src/components/Providers'
-import ErrorBoundary from '../src/components/ErrorBoundary'
 import ScrollToTop from '../src/components/ScrollToTop'
 import Footer from '../src/components/Footer'
+import EmotiWrapper from '../src/components/EmotiWrapper'
 import '../src/styles/globals.css'
 
 const orbitron = Orbitron({
@@ -31,6 +31,7 @@ const bungee = Bungee({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://fruitsfromdahood.com'),
   title: 'Fruits From Da Hood',
   description: 'Urban streetwear & emotional AI scenes',
   keywords: 'streetwear, urban fashion, fruit characters, premium clothing',
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Fruits From Da Hood | Premium Streetwear',
     description: 'Discover premium streetwear inspired by urban culture and fruit characters',
-    url: 'https://fruitsfromdahood.pl',
+    url: 'https://fruitsfromdahood.com',
     siteName: 'Fruits From Da Hood',
     images: [
       {
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
         alt: 'Fruits From Da Hood',
       },
     ],
-    locale: 'pl_PL',
+    locale: 'en_US',
     type: 'website',
   },
   twitter: {
@@ -78,13 +79,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pl" className={`${orbitron.variable} ${inter.variable} ${rajdhani.variable} ${bungee.variable}`}>
+    <html lang="en" className={`${orbitron.variable} ${inter.variable} ${rajdhani.variable} ${bungee.variable}`}>
+      <title>Fruits From Da Hood | Premium Streetwear & Emotional AI</title>
       <body className="font-inter antialiased flex flex-col min-h-screen">
         <Providers>
           <ScrollToTop />
-          <main className="flex-grow">
-            {children}
-          </main>
+          <EmotiWrapper>
+            <main className="flex-grow">{children}</main>
+          </EmotiWrapper>
           <Footer />
         </Providers>
       </body>

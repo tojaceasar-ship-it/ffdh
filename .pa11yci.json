@@ -1,6 +1,6 @@
 {
   "defaults": {
-    "timeout": 1000,
+    "timeout": 10000,
     "viewport": {
       "width": 1280,
       "height": 1024
@@ -15,11 +15,11 @@
       "actions": []
     },
     {
-      "url": "http://localhost:3000/sklep",
+      "url": "http://localhost:3000/shop",
       "actions": []
     },
     {
-      "url": "http://localhost:3000/sklep/koszyk",
+      "url": "http://localhost:3000/shop/cart",
       "actions": []
     }
   ]

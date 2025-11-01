@@ -3,6 +3,7 @@
 import { Provider } from 'react-redux'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { store } from '../store'
+import { MoodProvider } from '../contexts/MoodContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,7 +18,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        {children}
+        <MoodProvider>
+          {children}
+        </MoodProvider>
       </QueryClientProvider>
     </Provider>
   )

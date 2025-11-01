@@ -37,29 +37,6 @@ export function verifyStripeWebhook(
   }
 }
 
-/**
- * Verify Printful webhook signature
- */
-export function verifyPrintfulWebhook(
-  rawBody: string,
-  signature: string,
-  secret: string
-): boolean {
-  try {
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(rawBody, 'utf8')
-      .digest('hex')
-
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    )
-  } catch (error) {
-    console.error('Printful webhook verification failed:', error)
-    return false
-  }
-}
 
 /**
  * Generic webhook verification with retry logic
@@ -67,11 +44,10 @@ export function verifyPrintfulWebhook(
 export async function verifyWebhook(
   request: NextRequest,
   secret: string,
-  provider: 'stripe' | 'printful' = 'stripe'
+  provider: 'stripe' = 'stripe'
 ): Promise<{ isValid: boolean; body: string }> {
   try {
     const signature = request.headers.get('stripe-signature') ||
-                     request.headers.get('x-printful-signature') ||
                      request.headers.get('x-signature')
 
     if (!signature) {
@@ -116,8 +92,6 @@ export async function verifyWebhook(
 
     if (provider === 'stripe') {
       isValid = verifyStripeWebhook(rawBody, signature, secret)
-    } else if (provider === 'printful') {
-      isValid = verifyPrintfulWebhook(rawBody, signature, secret)
     }
 
     return { isValid, body: rawBody }

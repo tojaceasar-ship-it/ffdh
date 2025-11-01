@@ -6,23 +6,24 @@
 export const routes = {
   // Main routes
   home: '/',
-  about: '/o-nas',
+  about: '/about',
+  contact: '/contact',
   
   // Rewir AI routes
   rewir: '/rewir',
   rewirScene: (sceneId: string) => `/rewir/${sceneId}`,
   
   // Shop routes
-  shop: '/sklep',
-  product: (slug: string) => `/sklep/${slug}`,
+  shop: '/shop',
+  product: (slug: string) => `/product/${slug}`,
   
   // Checkout flow
   checkout: '/checkout',
   success: '/success',
-  cart: '/sklep/koszyk',
-  
-  // Community routes (future)
-  community: '/community',
+  cart: '/shop/cart',
+
+  privacy: '/privacy',
+  terms: '/terms',
   
   // Admin routes (future)
   admin: '/admin',
@@ -38,7 +39,7 @@ export function getRewirSceneUrl(sceneId: string): string {
 }
 
 export function getProductUrl(slug: string): string {
-  return `/sklep/${slug}`
+  return `/product/${slug}`
 }
 
 /**
@@ -71,6 +72,9 @@ export const staticRoutes: Array<{ path: string; priority: number; changefreq: s
   { path: routes.rewir, priority: 0.9, changefreq: 'weekly' },
   { path: routes.shop, priority: 0.9, changefreq: 'weekly' },
   { path: routes.about, priority: 0.5, changefreq: 'monthly' },
+  { path: routes.contact, priority: 0.4, changefreq: 'monthly' },
+  { path: routes.privacy, priority: 0.3, changefreq: 'yearly' },
+  { path: routes.terms, priority: 0.3, changefreq: 'yearly' },
 ]
 
 /**
@@ -84,8 +88,11 @@ export function isValidRoute(path: string): boolean {
     path === routes.checkout ||
     path === routes.success ||
     path.startsWith('/rewir/') ||
-    path.startsWith('/sklep/') ||
-    path === routes.about
+    path.startsWith('/product/') ||
+    path === routes.about ||
+    path === routes.contact ||
+    path === routes.privacy ||
+    path === routes.terms
   )
 }
 
@@ -97,10 +104,13 @@ export function getRouteName(path: string): string {
   if (path === routes.rewir) return 'Rewir'
   if (path.startsWith('/rewir/')) return 'Rewir Scene'
   if (path === routes.shop) return 'Shop'
-  if (path.startsWith('/sklep/')) return 'Product'
+  if (path.startsWith('/product/')) return 'Product'
   if (path === routes.checkout) return 'Checkout'
   if (path === routes.success) return 'Success'
   if (path === routes.about) return 'About'
+  if (path === routes.contact) return 'Contact'
+  if (path === routes.privacy) return 'Privacy'
+  if (path === routes.terms) return 'Terms'
   return 'Unknown'
 }
 

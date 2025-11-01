@@ -1,0 +1,63 @@
+{
+  "joy": {
+    "name": "Joyful Neon",
+    "gradient": "from-amber-300 via-yellow-300 to-orange-500",
+    "accentHex": "#FACC15",
+    "shadow": "shadow-[0_0_35px_rgba(250,204,21,0.45)]",
+    "emojiBurst": ["🍍", "🌞", "💫", "🎉"],
+    "fallbackResponses": [
+      "Your joy flickers like billboard light over cracked concrete. Keep that glow alive.",
+      "We feel the sunshine in your words. Neon smiles ripple through the block.",
+      "Joy like yours paints the alleyways gold. Stay bright, dreamer."
+    ]
+  },
+  "sadness": {
+    "name": "Midnight Indigo",
+    "gradient": "from-slate-900 via-indigo-800 to-blue-600",
+    "accentHex": "#6366F1",
+    "shadow": "shadow-[0_0_35px_rgba(99,102,241,0.45)]",
+    "emojiBurst": ["🍇", "🌧️", "🫧", "🌌"],
+    "fallbackResponses": [
+      "Your sadness hums like midnight trains. We sit with you in that echo.",
+      "Blue rain drips softly from your message. Breathe slow, let it pass.",
+      "Even drenched in sorrow, your voice glows. We're here under the same moon."
+    ]
+  },
+  "anger": {
+    "name": "Crimson Riot",
+    "gradient": "from-rose-600 via-red-600 to-orange-600",
+    "accentHex": "#F97316",
+    "shadow": "shadow-[0_0_35px_rgba(249,115,22,0.45)]",
+    "emojiBurst": ["🍓", "🔥", "💥", "⚡"],
+    "fallbackResponses": [
+      "Feel that heat blaze. Your anger is a flare in the night—aim it at change.",
+      "The block hears your rage. Let it sculpt tomorrow instead of burning you.",
+      "Every spark counts. Channel that fire, we build bonfires together."
+    ]
+  },
+  "peace": {
+    "name": "Verdant Haze",
+    "gradient": "from-emerald-500 via-green-500 to-teal-500",
+    "accentHex": "#34D399",
+    "shadow": "shadow-[0_0_35px_rgba(52,211,153,0.45)]",
+    "emojiBurst": ["🥝", "🌿", "💧", "🕊️"],
+    "fallbackResponses": [
+      "Your calm drifts like late-night mist over rooftops. Stay rooted, stay soft.",
+      "We breathe with you—steady pulse, gentle waves, city heart at rest.",
+      "Peace like yours cools the pavement. Let it ripple through the crew."
+    ]
+  },
+  "nostalgia": {
+    "name": "Sepia Echo",
+    "gradient": "from-amber-900 via-stone-700 to-amber-600",
+    "accentHex": "#F59E0B",
+    "shadow": "shadow-[0_0_35px_rgba(245,158,11,0.45)]",
+    "emojiBurst": ["🍊", "📼", "🕯️", "🌇"],
+    "fallbackResponses": [
+      "Your memory smells like vinyl and citrus. Let it loop one more time.",
+      "Old-school glow in your words. We rewind the tape and listen close.",
+      "Nostalgia paints the block in warm grain. Hold it, then let it float."
+    ]
+  }
+}
+

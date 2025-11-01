@@ -1,275 +1,336 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import EmotionFilter from '@/components/EmotionFilter'
 import SceneCard from '@/components/SceneCard'
 import SceneMap from '@/components/SceneMap'
-import EmotionFilter from '@/components/EmotionFilter'
 import SceneModal from '@/components/SceneModal'
-
-interface Scene {
-  slug: string
-  title: string
-  description?: string
-  image?: string
-  emotionTags?: string[]
-  commentCount?: number
-}
-
-// Fallback mock data if Supabase fetch fails
-const fallbackScenes: Scene[] = [
-  {
-    slug: 'urban-banana-blues',
-    title: 'Urban Banana Blues',
-    description: 'A melancholic journey through city streets with a wise old banana...',
-    image: 'https://via.placeholder.com/300x300?text=Scene+1',
-    emotionTags: ['sadness', 'nostalgia', 'urban'],
-    commentCount: 12,
-  },
-  {
-    slug: 'strawberry-revolution',
-    title: 'Strawberry Revolution',
-    description: 'When fruits rise up against the system. A tale of rebellion...',
-    image: 'https://via.placeholder.com/300x300?text=Scene+2',
-    emotionTags: ['anger', 'empowerment', 'political'],
-    commentCount: 28,
-  },
-]
+import EmotionDetector from '@/components/EmotionDetector'
+import { useEmotionProfile } from '@/hooks/useEmotionProfile'
+import {
+  EmotionScene,
+  SceneReactionType,
+  fetchEmotionScenes,
+  onReactionUpdate,
+  requestGeneratedScene,
+  submitReaction,
+} from '@/services/rewirService'
+import { isEmotionKey } from '@/config/emotions'
 
 export default function RewirPage() {
-  const [scenes, setScenes] = useState<Scene[]>([])
-  const [filteredScenes, setFilteredScenes] = useState<Scene[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { profile, theme, setEmotion, setNickname, recordSceneVisit } = useEmotionProfile()
+
+  const [scenes, setScenes] = useState<EmotionScene[]>([])
+  const [filteredScenes, setFilteredScenes] = useState<EmotionScene[]>([])
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
-  const [selectedScene, setSelectedScene] = useState<Scene | null>(null)
+  const [selectedScene, setSelectedScene] = useState<EmotionScene | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showMap, setShowMap] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [reactingSlug, setReactingSlug] = useState<string | null>(null)
 
   useEffect(() => {
-    async function fetchScenes() {
-      try {
-        const response = await fetch('/api/scenes/index?limit=50')
-        const data = await response.json()
+    let isMounted = true
 
-        if (data.success && data.scenes && data.scenes.length > 0) {
-          // Transform Supabase scenes to SceneCard format
-          const transformedScenes: Scene[] = data.scenes.map((scene: any) => ({
-            slug: scene.slug,
-            title: scene.title || scene.name || 'Untitled Scene',
-            description: scene.description || '',
-            image: scene.image_url || 'https://via.placeholder.com/300x300?text=Scene',
-            emotionTags: scene.emotion_tags || [],
-            commentCount: scene.comment_count || 0,
-          }))
-          setScenes(transformedScenes)
-        } else {
-          // Use fallback if no scenes found
-          console.warn('No scenes found in Supabase, using fallback data')
-          setScenes(fallbackScenes)
-        }
+    const loadScenes = async () => {
+      try {
+        const { scenes: loadedScenes } = await fetchEmotionScenes()
+        if (!isMounted) return
+        setScenes(loadedScenes)
+        setFilteredScenes(loadedScenes)
       } catch (err) {
-        console.error('Error fetching scenes:', err)
-        setError('Failed to load scenes')
-        // Use fallback on error
-        setScenes(fallbackScenes)
+        console.error('Failed to load scenes', err)
+        setError('Unable to load scenes right now. Using offline set.')
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
-    fetchScenes()
+    loadScenes()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
-  // Filter scenes based on selected emotions
   useEffect(() => {
-    if (selectedEmotions.length === 0) {
-      setFilteredScenes(scenes)
-    } else {
-      setFilteredScenes(
-        scenes.filter((scene) =>
-          scene.emotionTags?.some((tag) => selectedEmotions.includes(tag))
-        )
+    setFilteredScenes((prev) => {
+      if (selectedEmotions.length === 0) {
+        return scenes
+      }
+      const sceneMap = new Map(scenes.map((scene) => [scene.slug, scene]))
+      return Array.from(sceneMap.values()).filter((scene) =>
+        scene.emotionTags.some((tag) => selectedEmotions.includes(tag))
       )
-    }
+    })
   }, [scenes, selectedEmotions])
+
+  useEffect(() => {
+    if (scenes.length === 0) return
+    const unsubscribeFns = scenes.map((scene) =>
+      onReactionUpdate(scene.slug, ({ summary }) => {
+        setScenes((current) =>
+          current.map((item) =>
+            item.slug === scene.slug
+              ? {
+                  ...item,
+                  reactionSummary: summary,
+                }
+              : item
+          )
+        )
+      })
+    )
+
+    return () => {
+      unsubscribeFns.forEach((unsubscribe) => unsubscribe?.())
+    }
+  }, [scenes])
+
+  const availableEmotions = useMemo(
+    () => Array.from(new Set(scenes.flatMap((scene) => scene.emotionTags))).sort(),
+    [scenes]
+  )
 
   const handleEmotionToggle = (emotion: string) => {
     setSelectedEmotions((prev) =>
-      prev.includes(emotion) ? prev.filter((e) => e !== emotion) : [...prev, emotion]
+      prev.includes(emotion) ? prev.filter((value) => value !== emotion) : [...prev, emotion]
     )
   }
 
-  const handleEmotionClick = (emotion: string) => {
-    if (!selectedEmotions.includes(emotion)) {
-      setSelectedEmotions([emotion])
+  const handleGenerateScene = async () => {
+    setIsGenerating(true)
+    try {
+      const generated = await requestGeneratedScene({ emotion: profile.mood })
+      if (generated) {
+        setScenes((prev) => [generated, ...prev])
+        setSelectedScene(generated)
+        setIsModalOpen(true)
+      }
+    } catch (error) {
+      console.error('Failed to generate new scene', error)
+      setError('Generation failed. Try again soon.')
+    } finally {
+      setIsGenerating(false)
     }
   }
 
-  const handleSceneClick = (scene: Scene) => {
-    setSelectedScene(scene)
-    setIsModalOpen(true)
+  const handleReaction = async (scene: EmotionScene, reaction: SceneReactionType) => {
+    setReactingSlug(scene.slug)
+    try {
+      const summary = await submitReaction(scene.slug, reaction, {
+        nickname: profile.nickname,
+        mood: profile.mood,
+      })
+
+      setScenes((prev) =>
+        prev.map((item) =>
+          item.slug === scene.slug
+            ? {
+                ...item,
+                reactionSummary: summary,
+              }
+            : item
+        )
+      )
+    } catch (error) {
+      console.error('Reaction failed', error)
+      setError('We could not record that reaction. Try refreshing?')
+    } finally {
+      setReactingSlug(null)
+    }
   }
 
-  // Get unique emotions from scenes
-  const availableEmotions = Array.from(
-    new Set(scenes.flatMap((s) => s.emotionTags || []))
-  ).sort()
+  const handleOpenScene = (scene: EmotionScene) => {
+    setSelectedScene(scene)
+    setIsModalOpen(true)
+    recordSceneVisit(scene.slug)
+  }
+
+  const handleNicknameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setNickname(event.target.value.slice(0, 24))
+  }
+
+  const handleMoodChange = (emotion: string) => {
+    if (selectedEmotions.includes(emotion)) {
+      setSelectedEmotions((prev) => prev.filter((value) => value !== emotion))
+    }
+    if (isEmotionKey(emotion)) {
+      setEmotion(emotion)
+    }
+  }
 
   return (
-    <main className="min-h-screen bg-black text-white pt-20">
-      {/* Hero */}
-      <motion.section
-        className="py-12 px-6 bg-gradient-to-b from-neon-cyan/5 to-transparent"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-headline font-bold mb-4 text-neon-cyan">
-            🎭 Rewir
-          </h1>
-          <p className="text-gray-400 text-lg max-w-2xl">
-            Emotional scenes from the streets. AI-generated narratives exploring
-            urban culture, feelings, and fruit-inspired tales. Join the community.
-          </p>
-        </div>
-      </motion.section>
-
-      {/* Toggle View & Observer Mode */}
-      <motion.section
-        className="py-6 px-6 border-b border-gray-800"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-      >
-        <div className="max-w-6xl mx-auto flex items-center gap-4">
-          <motion.button
-            onClick={() => setShowMap(!showMap)}
-            className="px-4 py-2 bg-neon-yellow/20 border border-neon-yellow text-neon-yellow rounded-lg font-cta hover:bg-neon-yellow/30 transition-all"
-            whileHover={{ scale: 1.05 }}
-          >
-            {showMap ? '📋 List View' : '🗺️ Map View'}
-          </motion.button>
-          <label className="text-gray-400 text-sm">
-            🎭 Observer Mode (Anonymous):
-          </label>
-          <motion.button
-            className="px-4 py-2 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan rounded-lg font-cta hover:bg-neon-cyan/30 transition-all"
-            whileHover={{ scale: 1.05 }}
-          >
-            Enable
-          </motion.button>
-        </div>
-      </motion.section>
-
-      {/* Emotion Filter */}
-      {!showMap && !loading && scenes.length > 0 && (
-        <motion.section
-          className="py-6 px-6 border-b border-gray-800"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.15 }}
+    <main
+      className="min-h-screen pt-24 text-white"
+      style={{
+        backgroundImage: `radial-gradient(circle at top, ${theme.accentHex}15, transparent 45%), radial-gradient(circle at bottom, ${theme.accentHex}10, transparent 55%)`,
+        backgroundColor: '#020202',
+      }}
+    >
+      <section className="px-6 py-8">
+        <motion.div
+          className="mx-auto grid max-w-6xl gap-6 rounded-3xl border border-white/10 bg-black/60 p-8 backdrop-blur-lg lg:grid-cols-[2fr,1fr]"
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          <div className="max-w-6xl mx-auto">
-            <EmotionFilter
-              emotions={availableEmotions}
-              selectedEmotions={selectedEmotions}
-              onToggle={handleEmotionToggle}
+          <div className="space-y-6">
+            <p className="text-sm uppercase tracking-[0.4em] text-white/50">Fruits From Da Hood</p>
+            <h1 className="text-4xl font-headline font-bold tracking-tight text-white md:text-6xl">
+              Rewir 2.0 — Emotional Scene Grid
+            </h1>
+            <p className="max-w-2xl text-lg text-white/70">
+              AI-crafted fruit stories that react to your vibe. Tune the mood, drop a reaction, spin up fresh
+              narratives, and watch the block respond in real time.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <motion.button
+                onClick={handleGenerateScene}
+                disabled={isGenerating}
+                className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-black shadow-lg shadow-black/40 transition hover:bg-white/90 disabled:cursor-not-allowed disabled:bg-white/40"
+                whileHover={isGenerating ? {} : { scale: 1.05 }}
+                whileTap={isGenerating ? {} : { scale: 0.95 }}
+              >
+                {isGenerating ? 'Summoning scene…' : 'Generate fresh scene'}
+              </motion.button>
+              <button
+                onClick={() => setShowMap((prev) => !prev)}
+                className="rounded-full border border-white/20 px-5 py-2 text-sm font-semibold text-white/80 hover:border-white/40"
+              >
+                {showMap ? 'Show Grid' : 'Emotion Map'}
+              </button>
+              <span className="text-xs uppercase tracking-[0.3em] text-white/50">
+                Mood: {profile.mood}
+              </span>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-white/50">Personalise</h2>
+            <label className="mb-3 block text-xs uppercase tracking-[0.2em] text-white/40">Nickname</label>
+            <input
+              value={profile.nickname}
+              onChange={handleNicknameChange}
+              className="mb-5 w-full rounded-full border border-white/20 bg-black/60 px-4 py-2 text-sm text-white focus:border-white/60 focus:outline-none"
             />
+
+            <div className="mb-6">
+              <p className="mb-3 text-xs uppercase tracking-[0.3em] text-white/40">EmotiLayer – Nastrój</p>
+              <EmotionDetector showAnalyzeButton={true} className="py-2" />
+            </div>
+
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-white/40">Switch Mood</p>
+            <div className="flex flex-wrap gap-2">
+              {availableEmotions.slice(0, 8).map((emotion) => (
+                <button
+                  key={emotion}
+                  onClick={() => handleMoodChange(emotion)}
+                  className={`rounded-full px-3 py-1 text-xs font-semibold uppercase transition ${
+                    profile.mood === emotion ? 'bg-white text-black' : 'bg-white/10 text-white/70 hover:bg-white/20'
+                  }`}
+                >
+                  {emotion}
+                </button>
+              ))}
+            </div>
+            {profile.lastSceneSlug && (
+              <p className="mt-6 text-xs text-white/50">
+                Last visited scene: <span className="text-white/80">{profile.lastSceneSlug}</span>
+              </p>
+            )}
+          </div>
+        </motion.div>
+      </section>
+
+      {!showMap && scenes.length > 0 && (
+        <motion.section className="px-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <div className="mx-auto max-w-6xl rounded-3xl border border-white/5 bg-black/50 p-8 backdrop-blur-lg">
+            <EmotionFilter emotions={availableEmotions} selectedEmotions={selectedEmotions} onToggle={handleEmotionToggle} />
+            {selectedEmotions.length > 0 && (
+              <button
+                onClick={() => setSelectedEmotions([])}
+                className="text-xs font-semibold uppercase tracking-[0.3em] text-white/40 hover:text-white/70"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         </motion.section>
       )}
 
-      {/* Scene Map or Grid */}
-      <motion.section
-        className="py-12 px-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="max-w-6xl mx-auto">
+      <section className="px-6 py-10">
+        <div className="mx-auto max-w-6xl">
           {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-400">Loading scenes...</p>
-            </div>
+            <div className="py-24 text-center text-sm text-white/60">Loading the block…</div>
           ) : error && scenes.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-red-400">{error}</p>
-            </div>
+            <div className="py-24 text-center text-sm text-red-400">{error}</div>
           ) : scenes.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-400">No scenes available. Sync scenes from Sanity to get started.</p>
+            <div className="py-24 text-center text-sm text-white/60">
+              No scenes yet. Add content in Sanity or generate a fresh drop.
             </div>
           ) : showMap ? (
-            <SceneMap scenes={filteredScenes} onEmotionClick={handleEmotionClick} />
+            <SceneMap scenes={filteredScenes} onEmotionClick={handleEmotionToggle} />
           ) : (
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                staggerChildren: 0.1,
-                delayChildren: 0.2,
+              className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.08,
+                  },
+                },
               }}
             >
-              {filteredScenes.map((scene, idx) => (
-                <motion.div
-                  key={scene.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <SceneCard {...scene} />
+              {filteredScenes.map((scene) => (
+                <motion.div key={scene.slug} variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}>
+                  <SceneCard
+                    scene={scene}
+                    onOpen={handleOpenScene}
+                    onReact={(reaction) => handleReaction(scene, reaction)}
+                    isReacting={reactingSlug === scene.slug}
+                  />
                 </motion.div>
               ))}
             </motion.div>
           )}
-          
-          {!showMap && filteredScenes.length === 0 && scenes.length > 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-400">
-                No scenes match selected emotions. <button
-                  onClick={() => setSelectedEmotions([])}
-                  className="text-neon-yellow hover:underline"
-                >
-                  Clear filters
-                </button>
-              </p>
+
+          {!showMap && !loading && filteredScenes.length === 0 && scenes.length > 0 && (
+            <div className="py-20 text-center text-sm text-white/60">
+              Nothing matches those emotions. Try clearing filters or change your mood.
             </div>
           )}
         </div>
-      </motion.section>
+      </section>
 
-      {/* Info Box */}
-      <motion.section
-        className="py-12 px-6 bg-neon-cyan/5 border-t border-gray-800"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-headline font-bold mb-4 text-neon-cyan">
-            ✨ About the Rewir
-          </h2>
-          <p className="text-gray-400 mb-6">
-            The Rewir is an emotional sanctuary where urban tales come to life. Each scene
-            combines street photography vibes with AI-generated narratives, creating unique
-            stories about fruits navigating the concrete jungle.
+      <section className="px-6 pb-20">
+        <div className="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-black/60 p-10 text-white/70 backdrop-blur-lg">
+          <h2 className="mb-4 text-2xl font-headline font-bold text-white">About Rewir</h2>
+          <p className="mb-4">
+            Rewir 2.0 is a living mural of fruit emotions—part archive, part AI dreamscape. Scenes stream in from
+            Sanity CMS, Supabase, and on-device generators, weaving moods across the block.
           </p>
-          <p className="text-gray-400">
-            Engage with scenes, share your emotions, and let AI craft responses. Your feedback
-            helps shape the narrative landscape. All interactions are anonymous and moderated
-            for safety.
+          <p className="mb-4">
+            Reactions pulse in real time, comments ride through Supabase, and your personal vibe shifts the visual
+            language. No account needed—nicknames stay local, emotions stay yours.
+          </p>
+          <p>
+            Tip: fire off a new scene when the mood changes. The AI will mirror back a fresh fruit fable tuned to your
+            wavelength.
           </p>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Scene Modal */}
-      <SceneModal
-        scene={selectedScene || undefined}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      <SceneModal scene={selectedScene ?? undefined} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </main>
   )
 }

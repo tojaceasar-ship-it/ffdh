@@ -109,7 +109,8 @@ function getImageUrl(image: any): string | undefined {
  */
 export async function indexScene(sanityScene: SanityScene): Promise<IndexedScene | null> {
   try {
-    const slug = sanityScene.slug?.current || sanityScene._id
+    // Require explicit slug.current, don't fall back to _id
+    const slug = sanityScene.slug?.current
     if (!slug) {
       console.error('Scene missing slug:', sanityScene._id)
       return null

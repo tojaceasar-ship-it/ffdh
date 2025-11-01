@@ -1,0 +1,263 @@
+import crypto from "node:crypto";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+// Runtime and dynamic config for raw body access
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+// Idempotency store (in production, use Redis/DB)
+const processedEvents = new Map<string, number>();
+
+// Clean up old entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, timestamp] of processedEvents.entries()) {
+    if (now - timestamp > 60 * 60 * 1000) { // 1 hour TTL
+      processedEvents.delete(key);
+    }
+  }
+}, 5 * 60 * 1000);
+
+interface WebhookVerificationResult {
+  isValid: boolean;
+  eventId?: string;
+  error?: string;
+}
+
+async function verifyHmac({
+  rawBody,
+  signatureHeader,
+  timestampHeader,
+  secret,
+  toleranceSec = 300, // 5 min replay protection
+  source,
+}: {
+  rawBody: string;
+  signatureHeader: string | null;
+  timestampHeader: string | null;
+  secret: string;
+  toleranceSec?: number;
+  source: string;
+}): Promise<WebhookVerificationResult> {
+  if (!signatureHeader || !timestampHeader) {
+    return { isValid: false, error: "Missing signature or timestamp headers" };
+  }
+
+  const ts = Number(timestampHeader);
+  if (!Number.isFinite(ts) || Math.abs(Date.now() / 1000 - ts) > toleranceSec) {
+    return { isValid: false, error: "Timestamp outside tolerance window" };
+  }
+
+  let canonicalString: string;
+  let expectedSignature: string;
+
+  // Provider-specific canonical string construction
+  switch (source.toLowerCase()) {
+    case "stripe":
+      // Stripe: t=<timestamp>,v1=<signature>
+      canonicalString = `${timestampHeader}.${rawBody}`;
+      const stripeElements = signatureHeader.split(",");
+      const stripeSig = stripeElements.find(el => el.startsWith("v1="))?.replace("v1=", "");
+      if (!stripeSig) return { isValid: false, error: "Invalid Stripe signature format" };
+
+      expectedSignature = crypto
+        .createHmac("sha256", secret)
+        .update(canonicalString, "utf8")
+        .digest("hex");
+
+      if (!crypto.timingSafeEqual(Buffer.from(stripeSig), Buffer.from(expectedSignature))) {
+        return { isValid: false, error: "Invalid signature" };
+      }
+      break;
+
+    case "github":
+      // GitHub: sha256=<hex>
+      canonicalString = rawBody;
+      expectedSignature = crypto
+        .createHmac("sha256", secret)
+        .update(canonicalString, "utf8")
+        .digest("hex");
+
+      const githubSig = signatureHeader.replace(/^sha256=/, "");
+      if (!crypto.timingSafeEqual(Buffer.from(githubSig), Buffer.from(expectedSignature))) {
+        return { isValid: false, error: "Invalid signature" };
+      }
+      break;
+
+    default:
+      return { isValid: false, error: `Unsupported webhook source: ${source}` };
+  }
+
+  return { isValid: true };
+}
+
+function extractEventId(data: any, source: string): string | null {
+  switch (source.toLowerCase()) {
+    case "stripe":
+      return data.id || data.data?.object?.id || null;
+    case "github":
+      return data.id || null;
+    default:
+      return null;
+  }
+}
+
+async function readRawBody(request: NextRequest): Promise<string> {
+  // IMPORTANT: Read as text to preserve exact bytes for HMAC verification
+  const text = await request.text();
+  return text;
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ source: string }> }
+) {
+  const { source } = await params;
+  const sourceLower = source.toLowerCase();
+
+  // Validate source parameter
+  const validSources = ["stripe", "github"];
+  if (!validSources.includes(sourceLower)) {
+    console.warn(`[Webhook] Invalid source attempted: ${source}`);
+    return NextResponse.json({ error: "Invalid webhook source" }, { status: 400 });
+  }
+
+  // Get provider-specific secret
+  let secret: string | undefined;
+
+  switch (sourceLower) {
+    case "stripe":
+      secret = process.env.STRIPE_WEBHOOK_SECRET;
+      break;
+    case "github":
+      secret = process.env.GITHUB_WEBHOOK_SECRET;
+      break;
+    default:
+      secret = undefined;
+  }
+
+  if (!secret) {
+    console.error(`[Webhook] Missing secret for ${sourceLower}`);
+    return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+  }
+
+  try {
+    // Read raw body BEFORE any processing
+    const rawBody = await readRawBody(request);
+
+    // Extract headers based on provider
+    let signatureHeader: string | null = null;
+    let timestampHeader: string | null = null;
+
+    switch (source) {
+      case "stripe":
+        signatureHeader = request.headers.get("stripe-signature");
+        timestampHeader = request.headers.get("stripe-timestamp");
+        break;
+      case "github":
+        signatureHeader = request.headers.get("x-hub-signature-256");
+        timestampHeader = request.headers.get("x-github-delivery-timestamp");
+        break;
+    }
+
+    // Verify HMAC signature
+    const verification = await verifyHmac({
+      rawBody,
+      signatureHeader,
+      timestampHeader,
+      secret,
+      source: sourceLower,
+    });
+
+    if (!verification.isValid) {
+      console.warn(`[Webhook:${sourceLower}] Verification failed: ${verification.error}`);
+      return NextResponse.json(
+        { error: verification.error || "Invalid signature" },
+        { status: 400 }
+      );
+    }
+
+    // Parse JSON after verification
+    let data: any;
+    try {
+      data = JSON.parse(rawBody);
+    } catch (parseError) {
+      console.error(`[Webhook:${sourceLower}] JSON parse error:`, parseError);
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    }
+
+    // Extract event ID for idempotency
+    const eventId = extractEventId(data, sourceLower);
+    if (eventId) {
+      const eventKey = `${sourceLower}:${eventId}`;
+      const now = Date.now();
+
+      // Check for duplicate processing
+      if (processedEvents.has(eventKey)) {
+        console.log(`[Webhook:${sourceLower}] Duplicate event ignored: ${eventId}`);
+        return NextResponse.json({ status: "duplicate" }, { status: 200 });
+      }
+
+      // Mark as processed
+      processedEvents.set(eventKey, now);
+    }
+
+    // Log verification success (no sensitive data)
+    console.log(`[Webhook:${sourceLower}] Verified event: ${eventId || 'unknown'}`);
+
+    // Route to provider-specific handler
+    switch (sourceLower) {
+      case "stripe":
+        return await handleStripeWebhook(data);
+      case "github":
+        return await handleGithubWebhook(data);
+      default:
+        console.warn(`[Webhook] Unhandled source: ${source}`);
+        return NextResponse.json({ error: "Handler not implemented" }, { status: 501 });
+    }
+
+  } catch (error) {
+    console.error(`[Webhook:${sourceLower}] Processing error:`, error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+// Provider-specific handlers
+async function handleStripeWebhook(data: any) {
+  console.log(`[Stripe] Processing event: ${data.type}`);
+
+  // TODO: Implement Stripe-specific logic
+  // - Payment succeeded
+  // - Payment failed
+  // - Subscription events
+  // etc.
+
+  return NextResponse.json({ received: true, source: "stripe" });
+}
+
+async function handleGithubWebhook(data: any) {
+  console.log(`[GitHub] Processing event: ${data.action || data.event}`);
+
+  // TODO: Implement GitHub-specific logic
+  // - Push events
+  // - Pull request events
+  // - Release events
+  // etc.
+
+  return NextResponse.json({ received: true, source: "github" });
+}
+
+// Support OPTIONS for CORS preflight
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": process.env.NODE_ENV === "production"
+        ? "https://fruitsfromdahood.com"
+        : "http://localhost:3000",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, stripe-signature, x-hub-signature-256",
+    },
+  });
+}

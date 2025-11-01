@@ -1,0 +1,63 @@
+[
+  {
+    "name": "Banana Man Tee",
+    "slug": "banana-man-tee",
+    "description": "Premium streetwear tee featuring the iconic Banana Man character. 100% organic cotton, urban fruit energy.",
+    "price_eur": 39.99,
+    "printfulVariantId": "variant_test_banana_tee",
+    "imageUrl": "https://via.placeholder.com/800x800?text=Banana+Man+Tee",
+    "is_limited": false,
+    "stock": 100
+  },
+  {
+    "name": "Strawberry Revolution Hoodie",
+    "slug": "strawberry-revolution-hoodie",
+    "description": "Unisex hoodie celebrating fruit rebellion. Soft fleece lining, rebellious spirit. Wear the revolution.",
+    "price_eur": 69.99,
+    "printfulVariantId": "variant_test_strawberry_hoodie",
+    "imageUrl": "https://via.placeholder.com/800x800?text=Strawberry+Revolution+Hoodie",
+    "is_limited": true,
+    "stock": 50
+  },
+  {
+    "name": "Urban Mango Snapback",
+    "slug": "urban-mango-snapback",
+    "description": "Adjustable snapback cap with embroidered mango design. Perfect for the hustler lifestyle.",
+    "price_eur": 29.99,
+    "printfulVariantId": "variant_test_mango_cap",
+    "imageUrl": "https://via.placeholder.com/800x800?text=Urban+Mango+Snapback",
+    "is_limited": false,
+    "stock": 200
+  },
+  {
+    "name": "Grape Gang Sweatpants",
+    "slug": "grape-gang-sweatpants",
+    "description": "Comfortable sweatpants for the crew. Elastic waist, deep pockets, gang-approved design.",
+    "price_eur": 54.99,
+    "printfulVariantId": "variant_test_grape_pants",
+    "imageUrl": "https://via.placeholder.com/800x800?text=Grape+Gang+Sweatpants",
+    "is_limited": false,
+    "stock": 75
+  },
+  {
+    "name": "Orange Dreams Poster",
+    "slug": "orange-dreams-poster",
+    "description": "Limited edition screen-printed poster, 18x24 inches. Signed by the artist. Piece of FFDH history.",
+    "price_eur": 24.99,
+    "printfulVariantId": "variant_test_poster_orange",
+    "imageUrl": "https://via.placeholder.com/800x800?text=Orange+Dreams+Poster",
+    "is_limited": true,
+    "stock": 30
+  },
+  {
+    "name": "Pineapple Power Mug",
+    "slug": "pineapple-power-mug",
+    "description": "Ceramic mug for your morning hustle. 11oz capacity, dishwasher safe. Start your day with power.",
+    "price_eur": 19.99,
+    "printfulVariantId": "variant_test_pineapple_mug",
+    "imageUrl": "https://via.placeholder.com/800x800?text=Pineapple+Power+Mug",
+    "is_limited": false,
+    "stock": 150
+  }
+]
+
