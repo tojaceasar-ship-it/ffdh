@@ -1,12 +1,31 @@
 import { createClient } from '@sanity/client'
 
-export const sanityClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: '2024-01-01',
-  useCdn: process.env.NODE_ENV === 'production',
-  token: process.env.SANITY_AUTH_TOKEN, // Only needed for server-side writes
-})
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+
+// Create fallback client for build time if no project ID
+const getSanityClient = () => {
+  if (!projectId) {
+    console.warn('⚠️ Missing Sanity project ID - using fallback')
+    return createClient({
+      projectId: 'placeholder',
+      dataset: 'production',
+      apiVersion: '2024-01-01',
+      useCdn: false,
+    })
+  }
+  return createClient({
+    projectId,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+    apiVersion: '2024-01-01',
+    useCdn: process.env.NODE_ENV === 'production',
+    token: process.env.SANITY_AUTH_TOKEN,
+  })
+}
+
+export const sanityClient = getSanityClient()
+
+// Alias for backward compatibility with JS files
+export const client = sanityClient
 
 /**
  * Image builder for Sanity images

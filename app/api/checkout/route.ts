@@ -3,16 +3,25 @@ import { validateApiRequest, createCheckoutSessionSchema } from '@/lib/validatio
 import Stripe from 'stripe'
 import * as Sentry from '@sentry/nextjs'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-10-29.clover',
-})
-
 /**
  * POST /api/checkout
  * Create Stripe checkout session with validation
  */
 export async function POST(request: NextRequest) {
   try {
+    // Initialize Stripe with validation
+    const stripeKey = process.env.STRIPE_SECRET_KEY
+    if (!stripeKey) {
+      return NextResponse.json(
+        { error: 'Stripe not configured' },
+        { status: 503 }
+      )
+    }
+
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: '2025-10-29.clover',
+    })
+
     // Validate request data
     const validation = await validateApiRequest(createCheckoutSessionSchema, request)
 

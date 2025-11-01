@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { Orbitron, Inter, Rajdhani, Bungee } from 'next/font/google'
-import { Provider } from 'react-redux'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { store } from '../src/store'
+import Providers from '../src/components/Providers'
 import ErrorBoundary from '../src/components/ErrorBoundary'
 import ScrollToTop from '../src/components/ScrollToTop'
 import '../src/styles/globals.css'
@@ -73,15 +71,6 @@ export const metadata: Metadata = {
   },
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime in v4)
-    },
-  },
-})
-
 export default function RootLayout({
   children,
 }: {
@@ -90,14 +79,10 @@ export default function RootLayout({
   return (
     <html lang="pl" className={`${orbitron.variable} ${inter.variable} ${rajdhani.variable} ${bungee.variable}`}>
       <body className="font-inter antialiased">
-        <Provider store={store}>
-          <QueryClientProvider client={queryClient}>
-            <ErrorBoundary>
-              <ScrollToTop />
-              {children}
-            </ErrorBoundary>
-          </QueryClientProvider>
-        </Provider>
+        <Providers>
+          <ScrollToTop />
+          {children}
+        </Providers>
       </body>
     </html>
   )
