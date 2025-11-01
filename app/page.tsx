@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { charactersService } from '../src/services/charactersService'
-import Header from '../src/components/ui/Header'
+import Navbar from '../src/components/Navbar'
 import HeroSection from '../src/components/homepage/HeroSection'
 import CharacterSpotlight from '../src/components/homepage/CharacterSpotlight'
 import CommunityShowcase from '../src/components/homepage/CommunityShowcase'
@@ -33,7 +33,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <Header />
+      <Navbar />
       <HeroSection />
       <CharacterSpotlight characters={characters} />
       <CommunityShowcase />

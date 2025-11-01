@@ -3,6 +3,7 @@ import { Orbitron, Inter, Rajdhani, Bungee } from 'next/font/google'
 import Providers from '../src/components/Providers'
 import ErrorBoundary from '../src/components/ErrorBoundary'
 import ScrollToTop from '../src/components/ScrollToTop'
+import Footer from '../src/components/Footer'
 import '../src/styles/globals.css'
 
 const orbitron = Orbitron({
@@ -78,10 +79,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pl" className={`${orbitron.variable} ${inter.variable} ${rajdhani.variable} ${bungee.variable}`}>
-      <body className="font-inter antialiased">
+      <body className="font-inter antialiased flex flex-col min-h-screen">
         <Providers>
           <ScrollToTop />
-          {children}
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
         </Providers>
       </body>
     </html>
