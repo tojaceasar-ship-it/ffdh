@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Root CSS Variables */
+:root {
+  --neon-yellow: #ffd700;
+  --neon-cyan: #00d9ff;
+  --neon-orange: #ff6600;
+  --neon-pink: #ff1493;
+}
+
+/* Font Families */
+html {
+  --font-orbitron: var(--font-orbitron, 'Orbitron', sans-serif);
+  --font-inter: var(--font-inter, 'Inter', sans-serif);
+  --font-rajdhani: var(--font-rajdhani, 'Rajdhani', sans-serif);
+  --font-bungee: var(--font-bungee, 'Bungee', sans-serif);
+}
+
+/* Custom Components */
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-neon-yellow text-black font-bold rounded-lg hover:bg-neon-cyan hover:scale-105 transition-all duration-300;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 border-2 border-neon-yellow text-neon-yellow font-bold rounded-lg hover:bg-neon-yellow/10 transition-all duration-300;
+  }
+
+  .card-base {
+    @apply bg-black border-2 border-neon-yellow/30 rounded-lg p-6 hover:border-neon-yellow/80 transition-all duration-300;
+  }
+
+  .text-headline {
+    @apply font-headline font-bold text-neon-yellow;
+  }
+
+  .text-cta {
+    @apply font-cta font-bold text-white;
+  }
+
+  .gradient-neon {
+    @apply bg-gradient-to-r from-neon-yellow via-neon-cyan to-neon-pink;
+  }
+}
+
+/* Custom Utilities */
+@layer utilities {
+  .neon-shadow-yellow {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+
+  .neon-shadow-cyan {
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5), 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+
+  .glow-box-yellow {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.1);
+  }
+
+  .glow-box-cyan {
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2), inset 0 0 20px rgba(0, 217, 255, 0.1);
+  }
+
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+
+  .backdrop-blur-md {
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Animations */
+@keyframes neon-pulse {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.4);
+  }
+}
+
+@keyframes glitch {
+  0%, 100% {
+    text-shadow: -1px -1px 0 rgba(255, 0, 0, 0.5), 1px 1px 0 rgba(0, 255, 255, 0.5);
+  }
+  50% {
+    text-shadow: 1px 1px 0 rgba(255, 0, 0, 0.5), -1px -1px 0 rgba(0, 255, 255, 0.5);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-neon-pulse {
+  animation: neon-pulse 3s ease-in-out infinite;
+}
+
+.animate-glitch {
+  animation: glitch 0.5s ease-in-out;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neon-yellow);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection Styles */
+::selection {
+  background-color: var(--neon-yellow);
+  color: #000;
+}
+
+::-moz-selection {
+  background-color: var(--neon-yellow);
+  color: #000;
+}
+
+/* Focus Styles */
+:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+/* Dark Mode Base */
+body {
+  background-color: #000;
+  color: #fff;
+}

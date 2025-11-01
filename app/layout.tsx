@@ -1,19 +1,45 @@
 import type { Metadata } from 'next'
-import { Orbitron, Inter, Rajdhani, Bungee_Shade } from 'next/font/google'
-import './globals.css'
+import { Orbitron, Inter, Rajdhani, Bungee } from 'next/font/google'
+import { Provider } from 'react-redux'
+import { store } from '@/store'
+import Navbar from '@/components/Navbar'
+import '@/styles/globals.css'
 
-const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-headline' })
-const inter = Inter({ subsets: ['latin'], variable: '--font-body' })
-const rajdhani = Rajdhani({ weight: ['500', '600', '700'], subsets: ['latin'], variable: '--font-cta' })
-const bungee = Bungee_Shade({ weight: '400', subsets: ['latin'], variable: '--font-accent' })
+// Fonts
+const orbitron = Orbitron({
+  subsets: ['latin'],
+  weight: ['400', '700', '900'],
+  variable: '--font-orbitron',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
+})
+
+const rajdhani = Rajdhani({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-rajdhani',
+})
+
+const bungee = Bungee({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-bungee',
+})
 
 export const metadata: Metadata = {
-  title: 'Fruits From Da Hood | Premium Streetwear',
-  description: 'Urban culture meets premium streetwear. Zero GMO, 100% ulicy.',
-  keywords: ['streetwear', 'urban', 'fashion', 'neon', 'community'],
+  title: 'Fruits From Da Hood - Urban Streetwear & Emotional AI Scenes',
+  description:
+    'Premium streetwear meets emotional AI narratives. Explore FFDH drops, urban culture, and interactive scenes with the community.',
+  keywords: 'streetwear, urban culture, e-commerce, AI, emotional scenes, FFDH',
   openGraph: {
     title: 'Fruits From Da Hood',
-    description: 'Born on the block, raised in style',
+    description: 'Premium streetwear & emotional experiences',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://fruitsfromdahood.com',
+    siteName: 'FFDH',
     type: 'website',
   },
 }
@@ -24,14 +50,27 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pl" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${orbitron.variable} ${inter.variable} ${rajdhani.variable} ${bungee.variable}`}
+    >
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Bungee:wght@400&display=swap" rel="stylesheet" />
+        <style>{`
+          :root {
+            --neon-yellow: #ffd700;
+            --neon-cyan: #00d9ff;
+            --neon-orange: #ff6600;
+            --neon-pink: #ff1493;
+          }
+        `}</style>
       </head>
-      <body className={`${orbitron.variable} ${inter.variable} ${rajdhani.variable} ${bungee.variable} bg-black text-white font-body`}>
-        <div className="min-h-screen flex flex-col">
-          {children}
-        </div>
+      <body className="bg-black text-white font-sans antialiased">
+        <Provider store={store}>
+          <Navbar />
+          <div className="pt-16">
+            {children}
+          </div>
+        </Provider>
       </body>
     </html>
   )
