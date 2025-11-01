@@ -47,7 +47,7 @@ export default function AIReplyBox({ sceneId, sceneTitle, onSubmit }: AIReplyBox
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userComment: comment,
+          comment: comment,
           sceneTitle,
           sceneSlug: sceneId,
           emotion: selectedEmotion,
@@ -56,8 +56,9 @@ export default function AIReplyBox({ sceneId, sceneTitle, onSubmit }: AIReplyBox
 
       if (aiResponseCall.ok) {
         const data = await aiResponseCall.json()
-        setAiResponse(data.response || data.text)
-        onSubmit?.(comment, selectedEmotion || undefined, data.response || data.text)
+        const aiText = data.response?.text || data.response || data.text
+        setAiResponse(aiText)
+        onSubmit?.(comment, selectedEmotion || undefined, aiText)
       }
 
       // Reset form
