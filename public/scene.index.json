@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "generated": "2025-11-01T14:45:00Z",
+  "total_scenes": 2,
+  "scenes": [
+    {
+      "slug": "urban-banana-blues",
+      "title": "Urban Banana Blues",
+      "description": "A melancholic journey through city streets",
+      "narrative": "Yellow skin reflects the city lights. A wise old banana sits on a cold concrete bench, watching the world rush by. In this moment of solitude, memories of tropical warmth fade into neon glow.",
+      "emotion_tags": ["sadness", "nostalgia", "urban"],
+      "view_count": 1203,
+      "comment_count": 12,
+      "image_url": "https://via.placeholder.com/800x600?text=Urban+Banana+Blues",
+      "metadata": {
+        "created": "2025-01-15",
+        "updated": "2025-11-01",
+        "ai_generated": true
+      }
+    },
+    {
+      "slug": "strawberry-revolution",
+      "title": "Strawberry Revolution",
+      "description": "When fruits rise up against the system. A tale of rebellion...",
+      "emotion_tags": ["anger", "empowerment", "political"],
+      "view_count": 856,
+      "comment_count": 28,
+      "image_url": "https://via.placeholder.com/800x600?text=Strawberry+Revolution",
+      "metadata": {
+        "created": "2025-01-20",
+        "updated": "2025-11-01",
+        "ai_generated": true
+      }
+    }
+  ]
+}
+

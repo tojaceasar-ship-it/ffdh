@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import SceneCard from '@/components/SceneCard'
+import SceneMap from '@/components/SceneMap'
+import EmotionFilter from '@/components/EmotionFilter'
+import SceneModal from '@/components/SceneModal'
 
 interface Scene {
   slug: string
@@ -35,8 +38,13 @@ const fallbackScenes: Scene[] = [
 
 export default function RewirPage() {
   const [scenes, setScenes] = useState<Scene[]>([])
+  const [filteredScenes, setFilteredScenes] = useState<Scene[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
+  const [selectedScene, setSelectedScene] = useState<Scene | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [showMap, setShowMap] = useState(false)
 
   useEffect(() => {
     async function fetchScenes() {
@@ -73,6 +81,41 @@ export default function RewirPage() {
     fetchScenes()
   }, [])
 
+  // Filter scenes based on selected emotions
+  useEffect(() => {
+    if (selectedEmotions.length === 0) {
+      setFilteredScenes(scenes)
+    } else {
+      setFilteredScenes(
+        scenes.filter((scene) =>
+          scene.emotionTags?.some((tag) => selectedEmotions.includes(tag))
+        )
+      )
+    }
+  }, [scenes, selectedEmotions])
+
+  const handleEmotionToggle = (emotion: string) => {
+    setSelectedEmotions((prev) =>
+      prev.includes(emotion) ? prev.filter((e) => e !== emotion) : [...prev, emotion]
+    )
+  }
+
+  const handleEmotionClick = (emotion: string) => {
+    if (!selectedEmotions.includes(emotion)) {
+      setSelectedEmotions([emotion])
+    }
+  }
+
+  const handleSceneClick = (scene: Scene) => {
+    setSelectedScene(scene)
+    setIsModalOpen(true)
+  }
+
+  // Get unique emotions from scenes
+  const availableEmotions = Array.from(
+    new Set(scenes.flatMap((s) => s.emotionTags || []))
+  ).sort()
+
   return (
     <main className="min-h-screen bg-black text-white pt-20">
       {/* Hero */}
@@ -92,7 +135,7 @@ export default function RewirPage() {
         </div>
       </motion.section>
 
-      {/* Observer Mode Toggle (Placeholder) */}
+      {/* Toggle View & Observer Mode */}
       <motion.section
         className="py-6 px-6 border-b border-gray-800"
         initial={{ opacity: 0 }}
@@ -100,6 +143,13 @@ export default function RewirPage() {
         transition={{ delay: 0.1 }}
       >
         <div className="max-w-6xl mx-auto flex items-center gap-4">
+          <motion.button
+            onClick={() => setShowMap(!showMap)}
+            className="px-4 py-2 bg-neon-yellow/20 border border-neon-yellow text-neon-yellow rounded-lg font-cta hover:bg-neon-yellow/30 transition-all"
+            whileHover={{ scale: 1.05 }}
+          >
+            {showMap ? '📋 List View' : '🗺️ Map View'}
+          </motion.button>
           <label className="text-gray-400 text-sm">
             🎭 Observer Mode (Anonymous):
           </label>
@@ -112,7 +162,25 @@ export default function RewirPage() {
         </div>
       </motion.section>
 
-      {/* Scenes Grid */}
+      {/* Emotion Filter */}
+      {!showMap && !loading && scenes.length > 0 && (
+        <motion.section
+          className="py-6 px-6 border-b border-gray-800"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15 }}
+        >
+          <div className="max-w-6xl mx-auto">
+            <EmotionFilter
+              emotions={availableEmotions}
+              selectedEmotions={selectedEmotions}
+              onToggle={handleEmotionToggle}
+            />
+          </div>
+        </motion.section>
+      )}
+
+      {/* Scene Map or Grid */}
       <motion.section
         className="py-12 px-6"
         initial={{ opacity: 0 }}
@@ -132,6 +200,8 @@ export default function RewirPage() {
             <div className="text-center py-12">
               <p className="text-gray-400">No scenes available. Sync scenes from Sanity to get started.</p>
             </div>
+          ) : showMap ? (
+            <SceneMap scenes={filteredScenes} onEmotionClick={handleEmotionClick} />
           ) : (
             <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -142,7 +212,7 @@ export default function RewirPage() {
                 delayChildren: 0.2,
               }}
             >
-              {scenes.map((scene, idx) => (
+              {filteredScenes.map((scene, idx) => (
                 <motion.div
                   key={scene.slug}
                   initial={{ opacity: 0, y: 20 }}
@@ -153,6 +223,19 @@ export default function RewirPage() {
                 </motion.div>
               ))}
             </motion.div>
+          )}
+          
+          {!showMap && filteredScenes.length === 0 && scenes.length > 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-400">
+                No scenes match selected emotions. <button
+                  onClick={() => setSelectedEmotions([])}
+                  className="text-neon-yellow hover:underline"
+                >
+                  Clear filters
+                </button>
+              </p>
+            </div>
           )}
         </div>
       </motion.section>
@@ -180,6 +263,13 @@ export default function RewirPage() {
           </p>
         </div>
       </motion.section>
+
+      {/* Scene Modal */}
+      <SceneModal
+        scene={selectedScene || undefined}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </main>
   )
 }
