@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Orbitron, Inter } from 'next/font/google'
-import '@/styles/globals.css'
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -25,11 +24,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${inter.variable}`}>
-      <body className="bg-black text-white font-sans antialiased">
-        <div className="pt-16">
-          {children}
-        </div>
+    <html lang="en">
+      <body style={{ margin: 0, padding: 0, fontFamily: 'system-ui' }}>
+        {children}
       </body>
     </html>
   )
