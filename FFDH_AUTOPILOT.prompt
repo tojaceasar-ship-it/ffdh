@@ -1,0 +1,230 @@
+FFDH AUTOPILOT PRIME v2.0
+
+Tryb: Architect + Constructor + Validator + Forensic QA + Self-Healing Repair
+Cel: Kompletny audyt, optymalizacja i samonaprawa projektu Fruits From Da Hood (FFDH) — połączenie portalu artystyczno-modowego z ekosystemem AI „Rewir”.
+
+🧩 ETAP 1 — AUTO-DETEKCJA I SYNTEZA
+
+Przeskanuj wszystkie foldery: src, components, pages, context, hooks, api, assets, public.
+
+Wykryj:
+
+duplikaty kodu, nieużywane pliki, błędne importy;
+
+niespójność nazw i struktur folderów;
+
+komponenty naruszające zasadę „Single Responsibility”.
+
+Utwórz dynamiczną mapę zależności (FFDH_DEP_MAP.json).
+
+Zidentyfikuj framework (Next.js lub Vite) i powiązania z Sanity / Supabase / Printful API.
+
+⚙️ ETAP 2 — AUTO-WYBÓR METOD I STRATEGII
+
+Dla każdego punktu decyzyjnego (CMS, Auth, API, Routing, SSR/ISR/SSG, State Management, Tests):
+
+wykryj możliwe metody,
+
+oblicz wynik jakości według kryteriów (stabilność, wydajność, zgodność, bezpieczeństwo, skalowalność, DX, utrzymanie).
+
+Zastosuj formułę oceny:
+
+wynik = Σ (waga_kryterium × ocena_0–1) ± (bonusy - kary)
+
+
+Wybierz Top-1 metodę, zapisz w FFDH_METHOD_DECISIONS.json i uzasadnij wybór.
+
+Jeśli różnica < 0.05 → aktywuj Plan B (feature flag z metodą alternatywną).
+
+🔍 ETAP 3 — AUDYT TECHNICZNO-STRUKTURALNY
+
+Wykryj błędy logiczne:
+
+błędne zależności w useEffect,
+
+nieużywane useMemo, brak cleanupów,
+
+błędy typów (any, null access).
+
+Przeanalizuj routing i context — martwe linki, nieużywane providery.
+
+Sprawdź testy: brakujące pokrycie (<70%), nieużywane mocki, snapshoty bez logiki.
+
+Zidentyfikuj naruszenia zasad SOLID i DRY.
+
+🔐 ETAP 4 — AUDYT BEZPIECZEŃSTWA I KONFIGURACJI
+
+Sprawdź .env, next.config.js, package.json, api/printful.js, supabase.ts.
+
+Wykryj:
+
+twarde klucze API,
+
+brak CSP, brak try/catch,
+
+brak walidacji danych wejściowych,
+
+nieszczelne endpointy,
+
+ryzyko XSS / CSRF / CORS.
+
+Oznacz błędy wg wagi: [CRIT], [HIGH], [MED], [LOW].
+
+Zapisz w raporcie FFDH_SECURITY_AUDIT.md.
+
+⚡ ETAP 5 — AUDYT WYDAJNOŚCI
+
+Zbadaj build (next build / vite build) i rozmiary bundli.
+
+Sprawdź:
+
+code splitting, lazy loading, tree shaking;
+
+duże zależności (moment, lodash, dayjs);
+
+nadmiar renderów, brak memoizacji;
+
+preload obrazów, parametry priority, loading="lazy".
+
+Oblicz wynik Lighthouse (mobile/desktop) i generuj FFDH_PERF_REPORT.md.
+
+🎨 ETAP 6 — DOSTĘPNOŚĆ I UX
+
+Sprawdź dostępność (alt texty, aria-labels, kontrast, focus trap).
+
+Oceń użyteczność formularzy i stanów hover/focus.
+
+Sprawdź Framer Motion — zapewnij „reduce motion” fallback.
+
+Wykryj niespójne kolory i brak stylu przycisków.
+
+Raportuj w sekcji UX.
+
+🧮 ETAP 7 — ANALIZA API I INTEGRACJI
+
+Sprawdź /api/printful, /api/auth, /api/scenes, /api/characters:
+
+walidacja danych wejściowych,
+
+obsługa statusów HTTP,
+
+caching i retry,
+
+logowanie błędów.
+
+Dodaj lub napraw fetchWithRetry i schema.validate() (Zod/Yup).
+
+Sprawdź Supabase/Sanity queries — unikać select *.
+
+🧪 ETAP 8 — TESTY I RAPORT
+
+Uruchom testy: build, lint, unit, e2e, accessibility, Lighthouse.
+
+Wygeneruj raport:
+
+# 🧭 FFDH RADAR v2.0
+Build: PASS
+Lint: PASS
+Tests: 84% coverage
+Security: 2 [HIGH], 1 [MED]
+Performance: 92 (mobile) / 95 (desktop)
+UX: minor issues (2 low)
+
+
+Dołącz sekcję:
+
+Top 10 błędów (z lokalizacją i typem),
+
+Propozycje napraw,
+
+Priorytety (1 = krytyczne).
+
+🩹 ETAP 9 — AUTO-NAPRAWA (Self-Healing Mode)
+
+Napraw błędy [CRIT] i [HIGH]:
+
+przenieś klucze API do .env,
+
+dodaj walidację w endpointach,
+
+wprowadź memoizację i lazy loading.
+
+Refaktoruj delikatnie — zachowuj kontrakty.
+
+Utwórz patch: FFDH_PATCH_LOG.md.
+
+Uruchom testy regresyjne.
+
+W przypadku niepowodzenia → rollback.
+
+🧾 KOŃCOWY RAPORT ZBIORCZY
+
+Wygeneruj plik: reports/FFDH_AUDIT_FULL.md
+
+# 🍉 FFDH AUTOPILOT PRIME v2.0 – RAPORT KOŃCOWY
+
+## 1️⃣ Ocena projektu
+| Obszar | Wynik | Uwagi |
+|--------|--------|-------|
+| Struktura | 83 | lekki chaos w src/components |
+| Logika | 76 | duplikacja scen |
+| Bezpieczeństwo | 64 | 2 krytyczne braki w API |
+| Wydajność | 91 | dobry split, brak cache dla Supabase |
+| UX / A11y | 78 | kontrast + focus |
+| Testy | 58 | niskie pokrycie |
+
+Średnia ważona: 75/100  
+**Poziom ryzyka:** UMIARKOWANY  
+**Zalecane działania:** refaktor API, testy jednostkowe, optymalizacja obrazów.
+
+## 2️⃣ Naprawy automatyczne
+- Klucze API → `.env`
+- Dodano `fetchWithRetry()`
+- Włączono `memo` i lazy load
+- Poprawiono aria-label w 6 przyciskach
+
+## 3️⃣ Ryzyko regresji
+Prawdopodobieństwo: 8%  
+Zasięg: niski (frontend only)
+
+## 4️⃣ Sugerowany cykl utrzymania
+- Tygodniowy radar: `FFDH_QA_WEEKLY`
+- Miesięczny audyt wydajności
+- Stały backup Sanity + Supabase
+
+⚡ TRYB AKTYWACJI
+/ACTIVATE FFDH-AUTOPILOT
+MODE: Full Sweep → Decision → Audit → Repair → Report
+TARGET: main + rewir + shop
+DEPTH: 100%
+ROLLBACK: enabled
+OUTPUT:
+  - /reports/FFDH_AUDIT_FULL.md
+  - /reports/FFDH_RADAR.md
+  - /decisions/FFDH_METHOD_DECISIONS.json
+  - /patches/FFDH_PATCH_LOG.md
+POLICY:
+  - Lighthouse ≥ 95
+  - Test coverage ≥ 70%
+  - No critical security leaks
+
+🧬 FUNKCJE WSPOMAGAJĄCE
+
+AI-Method Selector: automatycznie wybiera technologie (Supabase vs Sanity, Zustand vs Context).
+
+Forensic QA Engine: punktuje każdy plik i moduł.
+
+Risk Estimator: szacuje % prawdopodobieństwa regresji po naprawach.
+
+Auto-Rollback: przywraca poprzedni commit w razie krytycznych błędów.
+
+Self-Healing Loop: ponawia testy po każdej poprawce.
+
+🔁 TRYB „RADAR LOOP”
+
+Aby uruchamiać cykliczny audyt:
+
+/ACTIVATE FFDH-RADAR-LOOP
+FREQ: weekly
+TASK: Full QA sweep + Repair summary
+OUTPUT: /reports/weekly/FFDH_Radar_[DATE].md

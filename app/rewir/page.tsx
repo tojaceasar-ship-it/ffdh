@@ -1,10 +1,20 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import SceneCard from '@/components/SceneCard'
 
-// Temporary mock data - replace with Sanity
-const mockScenes = [
+interface Scene {
+  slug: string
+  title: string
+  description?: string
+  image?: string
+  emotionTags?: string[]
+  commentCount?: number
+}
+
+// Fallback mock data if Supabase fetch fails
+const fallbackScenes: Scene[] = [
   {
     slug: 'urban-banana-blues',
     title: 'Urban Banana Blues',
@@ -21,41 +31,48 @@ const mockScenes = [
     emotionTags: ['anger', 'empowerment', 'political'],
     commentCount: 28,
   },
-  {
-    slug: 'mango-dreams',
-    title: 'Mango Dreams',
-    description: 'Sweet fantasies of tropical paradise in a concrete jungle...',
-    image: 'https://via.placeholder.com/300x300?text=Scene+3',
-    emotionTags: ['joy', 'hope', 'dreamy'],
-    commentCount: 45,
-  },
-  {
-    slug: 'apple-reflections',
-    title: 'Apple Reflections',
-    description: 'A serene moment of self-discovery beneath the city lights...',
-    image: 'https://via.placeholder.com/300x300?text=Scene+4',
-    emotionTags: ['contemplation', 'peace', 'introspection'],
-    commentCount: 18,
-  },
-  {
-    slug: 'grape-chaos',
-    title: 'Grape Chaos',
-    description: 'When the grapes go wild in the marketplace of life...',
-    image: 'https://via.placeholder.com/300x300?text=Scene+5',
-    emotionTags: ['confusion', 'energy', 'chaos'],
-    commentCount: 33,
-  },
-  {
-    slug: 'orange-connection',
-    title: 'Orange Connection',
-    description: 'Finding unity and connection in a fragmented world...',
-    image: 'https://via.placeholder.com/300x300?text=Scene+6',
-    emotionTags: ['love', 'unity', 'warmth'],
-    commentCount: 52,
-  },
 ]
 
 export default function RewirPage() {
+  const [scenes, setScenes] = useState<Scene[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchScenes() {
+      try {
+        const response = await fetch('/api/scenes/index?limit=50')
+        const data = await response.json()
+
+        if (data.success && data.scenes && data.scenes.length > 0) {
+          // Transform Supabase scenes to SceneCard format
+          const transformedScenes: Scene[] = data.scenes.map((scene: any) => ({
+            slug: scene.slug,
+            title: scene.title || scene.name || 'Untitled Scene',
+            description: scene.description || '',
+            image: scene.image_url || 'https://via.placeholder.com/300x300?text=Scene',
+            emotionTags: scene.emotion_tags || [],
+            commentCount: scene.comment_count || 0,
+          }))
+          setScenes(transformedScenes)
+        } else {
+          // Use fallback if no scenes found
+          console.warn('No scenes found in Supabase, using fallback data')
+          setScenes(fallbackScenes)
+        }
+      } catch (err) {
+        console.error('Error fetching scenes:', err)
+        setError('Failed to load scenes')
+        // Use fallback on error
+        setScenes(fallbackScenes)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchScenes()
+  }, [])
+
   return (
     <main className="min-h-screen bg-black text-white pt-20">
       {/* Hero */}
@@ -103,26 +120,40 @@ export default function RewirPage() {
         transition={{ delay: 0.2 }}
       >
         <div className="max-w-6xl mx-auto">
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{
-              staggerChildren: 0.1,
-              delayChildren: 0.2,
-            }}
-          >
-            {mockScenes.map((scene, idx) => (
-              <motion.div
-                key={scene.slug}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <SceneCard {...scene} />
-              </motion.div>
-            ))}
-          </motion.div>
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-400">Loading scenes...</p>
+            </div>
+          ) : error && scenes.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-red-400">{error}</p>
+            </div>
+          ) : scenes.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-400">No scenes available. Sync scenes from Sanity to get started.</p>
+            </div>
+          ) : (
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                staggerChildren: 0.1,
+                delayChildren: 0.2,
+              }}
+            >
+              {scenes.map((scene, idx) => (
+                <motion.div
+                  key={scene.slug}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <SceneCard {...scene} />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </motion.section>
 

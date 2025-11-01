@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, use } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 // Mock scene data - replace with Sanity fetch
@@ -27,11 +27,12 @@ const mockScenes: Record<string, any> = {
 }
 
 export default function SceneDetailPage({ params }: PageProps) {
+  const { slug } = use(params)
   const [comment, setComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null)
 
-  const scene = mockScenes[params.slug] || mockScenes['urban-banana-blues']
+  const scene = mockScenes[slug] || mockScenes['urban-banana-blues']
 
   const emotions = ['joy', 'sadness', 'anger', 'love', 'fear', 'surprise', 'peace', 'nostalgia']
 

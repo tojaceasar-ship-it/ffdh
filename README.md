@@ -35,13 +35,14 @@ npm run dev
 | **Language** | TypeScript (strict mode) |
 | **Styling** | Tailwind CSS 3.4 + CSS Variables |
 | **Animations** | Framer Motion 11 |
-| **State** | Redux Toolkit 1.9 |
+| **State** | Redux Toolkit 1.9 + React Query |
 | **CMS** | Sanity (Headless) |
 | **Database** | Supabase (PostgreSQL) |
 | **E-commerce** | Printful API + Stripe |
-| **Auth** | NextAuth.js 5 |
-| **Testing** | Jest + Playwright |
-| **Deployment** | Vercel |
+| **Auth** | Supabase Auth |
+| **Testing** | Vitest + Playwright + Lighthouse CI + pa11y |
+| **Security** | Sentry + Zod validation + Webhook verification |
+| **Deployment** | Vercel (Main + Admin Panel) |
 
 ---
 
@@ -189,14 +190,28 @@ npm run lint             # ESLint check
 npm run format           # Prettier formatting
 npm run type-check       # TypeScript type check
 
-# Testing
-npm run test             # Jest unit tests
+# Quality Assurance
+npm run lint             # ESLint check
+npm run lint:fix         # Auto-fix ESLint issues
+npm run type-check       # TypeScript type check
+npm run test             # Vitest unit tests
+npm run test:coverage    # Unit tests with coverage
+npm run test:unit        # Run unit tests only
 npm run test:e2e         # Playwright E2E tests
+npm run test:e2e:ui      # E2E tests with UI
+npm run test:e2e:debug   # Debug E2E tests
+npm run test:ci          # Full test suite (unit + e2e)
+npm run lhci             # Lighthouse performance tests
+npm run a11y             # Accessibility tests (pa11y)
+npm run a11y:ci          # Accessibility tests for CI
 
-# Sanity CMS
+# Development
+npm run build            # Production build
+npm run preview          # Preview production build
+npm run build:analyze    # Bundle analyzer
+
+# CMS & Data
 npm run sanity:dev       # Start Sanity Studio
-
-# Scripts
 npm run seed             # Seed Sanity with initial data
 npm run import:products  # Sync Printful products to Sanity
 ```
@@ -225,9 +240,17 @@ STRIPE_WEBHOOK_SECRET=whsec_xxx
 
 # Printful
 PRINTFUL_API_KEY=your_api_key
+PRINTFUL_WEBHOOK_SECRET=your_webhook_secret
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Monitoring (Optional)
+NEXT_PUBLIC_SENTRY_DSN=https://xxxx@sentry.io/project_id
+SENTRY_AUTH_TOKEN=your_sentry_auth_token
+
+# Environment
+NODE_ENV=development
 ```
 
 ---

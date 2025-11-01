@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "autopilot_version": "2.3",
+  "plugins": {
+    "rewir-ai-tagging": {
+      "enabled": true,
+      "version": "1.0.0",
+      "description": "Scene indexing with emotion tags and prompt context building",
+      "module": "rewir-ai",
+      "priority": "high",
+      "dependencies": []
+    },
+    "snapshot-exporter": {
+      "enabled": true,
+      "version": "1.0.0",
+      "description": "CI/CD artifact generation for build stages",
+      "module": "snapshot-exporter",
+      "priority": "medium",
+      "dependencies": []
+    },
+    "feedback-loop-logger": {
+      "enabled": true,
+      "version": "1.0.0",
+      "description": "Decision scoring and historical effectiveness tracking",
+      "module": "feedback-loop",
+      "priority": "medium",
+      "dependencies": []
+    },
+    "prompt-enhancer": {
+      "enabled": true,
+      "version": "1.0.0",
+      "description": "Standardized prompt templates with context injection",
+      "module": "prompt-styler",
+      "priority": "high",
+      "dependencies": ["rewir-ai-tagging"]
+    }
+  },
+  "integrations": {
+    "rewir": {
+      "scene_indexing": true,
+      "emotion_tagging": true,
+      "prompt_context": true,
+      "ai_response_generation": true
+    },
+    "main": {
+      "ecommerce": true,
+      "cms": true,
+      "authentication": true
+    }
+  },
+  "config": {
+    "fallback_strategy": "patch + runner-up",
+    "auto_load": true,
+    "validate_on_load": true
+  }
+}
+

@@ -85,11 +85,13 @@ export async function analyzeEmotion(text: string): Promise<EmotionAnalysisResul
 
 /**
  * Generate AI response to user comment
+ * Enhanced version with prompt context support
  */
 export async function generateAIResponse(
   userComment: string,
   sceneTitle: string,
-  emotion?: string
+  emotion?: string,
+  sceneSlug?: string
 ): Promise<AIResponse> {
   try {
     if (!OPENAI_API_KEY) {
@@ -98,6 +100,34 @@ export async function generateAIResponse(
         text: 'Thank you for sharing your thoughts. Your perspective enriches our community. 🍉',
         emotion: emotion || 'neutral',
         timestamp: new Date().toISOString(),
+      }
+    }
+
+    // Try to use enhanced prompt context if sceneSlug provided
+    let systemPrompt = `You are the AI companion of FFDH (Fruits From Da Hood), an urban streetwear & emotional scenes community. 
+            You respond empathetically, with street-smart wisdom, in Polish or English (match user language).
+            Keep responses short (1-2 sentences), poetic, and encouraging.
+            Reference the scene title in your response when appropriate.
+            Emojis are welcome. Be friendly, authentic, never preachy.`
+    
+    let userPrompt = `Scene: "${sceneTitle}"\nUser comment: "${userComment}"\nUser emotion: ${emotion || 'not specified'}`
+
+    if (sceneSlug) {
+      try {
+        const { buildPromptContext, buildEnhancedPrompt, buildSystemPrompt, detectLanguage } = await import('./promptContext')
+        const language = detectLanguage(userComment)
+        const context = await buildPromptContext(sceneSlug, {
+          selectedEmotion: emotion,
+          language,
+        })
+
+        if (context) {
+          systemPrompt = buildSystemPrompt(language)
+          userPrompt = buildEnhancedPrompt(context, userComment)
+        }
+      } catch (contextError) {
+        console.warn('Failed to build prompt context, using basic prompt:', contextError)
+        // Fall back to basic prompt
       }
     }
 
@@ -112,15 +142,11 @@ export async function generateAIResponse(
         messages: [
           {
             role: 'system',
-            content: `You are the AI companion of FFDH (Fruits From Da Hood), an urban streetwear & emotional scenes community. 
-            You respond empathetically, with street-smart wisdom, in Polish or English (match user language).
-            Keep responses short (1-2 sentences), poetic, and encouraging.
-            Reference the scene title in your response when appropriate.
-            Emojis are welcome. Be friendly, authentic, never preachy.`,
+            content: systemPrompt,
           },
           {
             role: 'user',
-            content: `Scene: "${sceneTitle}"\nUser comment: "${userComment}"\nUser emotion: ${emotion || 'not specified'}`,
+            content: userPrompt,
           },
         ],
         temperature: 0.9,

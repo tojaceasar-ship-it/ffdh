@@ -1,0 +1,233 @@
+{
+  "timestamp": "2025-01-27T12:00:00Z",
+  "phase": "AUTOPILOT",
+  "mode": "Full Decision→Build→Test",
+  "target": ["main", "rewir"],
+  "policy": "default",
+  "decisions": {
+    "architecture": {
+      "framework": {
+        "decision": "Next.js 15 App Router",
+        "reason": "Modern React framework with built-in SSR, API routes, and deployment optimization",
+        "alternatives_considered": ["Vite + React", "Remix", "SvelteKit"],
+        "impact": "Full-stack capabilities, Vercel optimization, better SEO"
+      },
+      "state_management": {
+        "decision": "Redux Toolkit + React Query",
+        "reason": "Redux for complex cart logic, React Query for server state",
+        "alternatives_considered": ["Zustand", "Recoil", "SWR"],
+        "impact": "Predictable cart state, efficient API data fetching"
+      },
+      "styling": {
+        "decision": "Tailwind CSS + CSS Variables",
+        "reason": "Utility-first CSS with custom design system support",
+        "alternatives_considered": ["styled-components", "CSS Modules", "SCSS"],
+        "impact": "Consistent design system, performance, maintainability"
+      }
+    },
+    "rewir_ai_integration": {
+      "scene_indexing": {
+        "decision": "Sanity CMS + Supabase hybrid storage",
+        "reason": "Sanity for content management, Supabase for dynamic scene metadata and comments",
+        "alternatives_considered": ["Sanity only", "Supabase only", "Contentful"],
+        "impact": "Rich content editing + real-time interactions, scalable scene database"
+      },
+      "emotion_tagging": {
+        "decision": "OpenAI GPT-4 Turbo for emotion analysis + manual tags",
+        "reason": "High accuracy emotion detection with fallback to user-selected tags",
+        "alternatives_considered": ["Azure Cognitive Services", "Google Cloud NLP", "Manual only"],
+        "impact": "Automatic emotion detection enhances user experience, reduces manual tagging"
+      },
+      "prompt_context": {
+        "decision": "Scene metadata + user history + emotion tags in AI prompts",
+        "reason": "Contextual AI responses require scene title, user emotion, and comment history",
+        "alternatives_considered": ["Basic prompts only", "Full user profile", "Anonymized context"],
+        "impact": "More personalized, empathetic AI responses while maintaining privacy"
+      },
+      "ai_response_generation": {
+        "decision": "GPT-4 Turbo with temperature 0.9, max 150 tokens, bilingual (PL/EN)",
+        "reason": "Balanced creativity and consistency, supports Polish and English naturally",
+        "alternatives_considered": ["GPT-3.5", "Claude", "Local models"],
+        "impact": "Poetic, empathetic responses matching FFDH brand voice"
+      },
+      "scene_narrative_generation": {
+        "decision": "GPT-4 Turbo with temperature 1.0, max 200 tokens, street poetry style",
+        "reason": "High creativity needed for emotional, urban narratives",
+        "alternatives_considered": ["Lower temperature", "Shorter narratives", "Template-based"],
+        "impact": "Unique, evocative scene descriptions matching FFDH aesthetic"
+      }
+    },
+    "testing": {
+      "unit_testing": {
+        "decision": "Vitest + React Testing Library",
+        "reason": "Fast, modern testing framework with great React support",
+        "alternatives_considered": ["Jest", "Mocha + Chai"],
+        "impact": "Faster test execution, better DX, ESM support"
+      },
+      "e2e_testing": {
+        "decision": "Playwright",
+        "reason": "Cross-browser testing with excellent debugging capabilities",
+        "alternatives_considered": ["Cypress", "Puppeteer"],
+        "impact": "Reliable cross-browser testing, great developer experience"
+      },
+      "ai_service_testing": {
+        "decision": "Mock OpenAI API responses + integration tests with fallback",
+        "reason": "Test AI logic without API costs, verify real API behavior separately",
+        "alternatives_considered": ["Real API only", "Mock only", "Hybrid with rate limiting"],
+        "impact": "Fast, reliable tests with real API validation in CI"
+      },
+      "performance_testing": {
+        "decision": "Lighthouse CI",
+        "reason": "Industry-standard performance and accessibility auditing",
+        "alternatives_considered": ["WebPageTest", "Sitespeed.io"],
+        "impact": "Automated performance monitoring, Google standards compliance"
+      },
+      "accessibility_testing": {
+        "decision": "pa11y CI",
+        "reason": "Comprehensive accessibility testing with CI integration",
+        "alternatives_considered": ["axe-core", "Lighthouse accessibility"],
+        "impact": "Automated a11y compliance, detailed reporting"
+      }
+    },
+    "security": {
+      "authentication": {
+        "decision": "Supabase Auth",
+        "reason": "Integrated auth solution with PostgreSQL backend",
+        "alternatives_considered": ["NextAuth.js", "Firebase Auth"],
+        "impact": "Simplified auth flow, database integration"
+      },
+      "api_security": {
+        "decision": "Zod validation + Sentry monitoring",
+        "reason": "Type-safe validation with comprehensive error tracking",
+        "alternatives_considered": ["Joi", "Yup", "io-ts"],
+        "impact": "Runtime type safety, detailed error monitoring"
+      },
+      "webhook_security": {
+        "decision": "Signature verification + rate limiting",
+        "reason": "Industry-standard webhook security practices",
+        "alternatives_considered": ["API key auth", "JWT tokens"],
+        "impact": "Protection against webhook attacks and abuse"
+      },
+      "ai_content_moderation": {
+        "decision": "OpenAI moderation API + custom toxicity threshold",
+        "reason": "Prevent toxic content while maintaining community voice",
+        "alternatives_considered": ["Manual moderation only", "Perspective API", "Custom NLP"],
+        "impact": "Automated content safety with human review queue"
+      }
+    },
+    "deployment": {
+      "platform": {
+        "decision": "Vercel (Main + Admin Panel)",
+        "reason": "Optimized for Next.js with excellent developer experience",
+        "alternatives_considered": ["Netlify", "Railway", "AWS Amplify"],
+        "impact": "Zero-config deployment, preview deployments, analytics"
+      },
+      "ci_cd": {
+        "decision": "GitHub Actions with quality gates",
+        "reason": "Integrated CI/CD with comprehensive quality assurance",
+        "alternatives_considered": ["Vercel CI", "CircleCI"],
+        "impact": "Automated testing, deployment safety, PR validation"
+      }
+    },
+    "monitoring": {
+      "error_tracking": {
+        "decision": "Sentry",
+        "reason": "Industry-leading error tracking with performance monitoring",
+        "alternatives_considered": ["LogRocket", "Bugsnag"],
+        "impact": "Comprehensive error monitoring, user replay capability"
+      },
+      "analytics": {
+        "decision": "Vercel Analytics + Custom dashboards",
+        "reason": "Built-in performance metrics with custom business analytics",
+        "alternatives_considered": ["Google Analytics", "Mixpanel"],
+        "impact": "Performance monitoring, user behavior insights"
+      },
+      "ai_usage_tracking": {
+        "decision": "Supabase logs + Sentry for API failures",
+        "reason": "Track AI API usage and errors without heavy instrumentation",
+        "alternatives_considered": ["Custom analytics service", "OpenTelemetry", "No tracking"],
+        "impact": "Monitor AI costs and reliability"
+      }
+    },
+    "autopilot_integrations": {
+      "rewir_ai_tagging": {
+        "decision": "Scene index with emotion tags + prompt context builder",
+        "reason": "Enable AI-powered scene discovery and contextual response generation",
+        "alternatives_considered": ["No indexing", "Basic tagging only"],
+        "impact": "Better scene recommendations, more relevant AI responses"
+      },
+      "snapshot_exporter": {
+        "decision": "CI/CD artifact generation for build stages",
+        "reason": "Enable rollback and debugging of production builds",
+        "alternatives_considered": ["No snapshots", "Full database dumps"],
+        "impact": "Faster recovery, better deployment confidence"
+      },
+      "feedback_loop_logger": {
+        "decision": "Decision scoring + historical effectiveness tracking",
+        "reason": "Learn from past decisions to improve autopilot recommendations",
+        "alternatives_considered": ["No logging", "Basic metrics only"],
+        "impact": "Continuous improvement of autopilot decision quality"
+      },
+      "prompt_enhancer": {
+        "decision": "Standardized prompt templates + context injection",
+        "reason": "Ensure consistent AI behavior across Rewir features",
+        "alternatives_considered": ["Ad-hoc prompts", "External prompt service"],
+        "impact": "More reliable AI outputs, easier prompt optimization"
+      }
+    }
+  },
+  "trade_offs": {
+    "complexity_vs_maintainability": {
+      "decision": "Accept higher initial complexity for long-term maintainability",
+      "justification": "Comprehensive testing and security setup prevents future issues"
+    },
+    "build_time_vs_developer_experience": {
+      "decision": "Optimize for developer experience over raw build performance",
+      "justification": "Fast feedback loops and debugging capabilities outweigh build time"
+    },
+    "feature_completeness_vs_time_to_market": {
+      "decision": "Complete infrastructure foundation before feature development",
+      "justification": "Solid foundation enables faster, safer feature development"
+    },
+    "ai_cost_vs_user_experience": {
+      "decision": "Accept higher AI API costs for superior user experience",
+      "justification": "GPT-4 Turbo provides better emotional intelligence than cheaper alternatives"
+    },
+    "privacy_vs_personalization": {
+      "decision": "Anonymized context only, no full user profiles in AI prompts",
+      "justification": "Balance between personalized responses and user privacy (GDPR compliance)"
+    }
+  },
+  "risks_mitigated": [
+    "Build system compatibility across platforms",
+    "Security vulnerabilities in webhook endpoints",
+    "Performance regression without monitoring",
+    "Code quality degradation without automated testing",
+    "Deployment failures without staging environment",
+    "AI API rate limiting and cost overruns",
+    "Toxic content in community interactions",
+    "Scene data inconsistency between Sanity and Supabase"
+  ],
+  "success_criteria": [
+    "All quality gates passing in CI/CD pipeline",
+    "Zero critical security vulnerabilities",
+    "Performance metrics within target ranges",
+    "100% accessibility compliance",
+    "Successful production deployment with monitoring",
+    "Rewir AI responses generated in < 2s p95",
+    "Scene indexing complete with emotion tags",
+    "AI content moderation catching >95% toxic content",
+    "Feedback loop tracking all major decisions"
+  ],
+  "autopilot_config": {
+    "plugins_enabled": "auto",
+    "plugin_registry": "ffdh.plugins.json (if exists)",
+    "fallback_strategy": "patch + runner-up on failure",
+    "integrations": [
+      "rewir-ai-tagging",
+      "snapshot-exporter",
+      "feedback-loop-logger",
+      "prompt-enhancer"
+    ]
+  }
+}

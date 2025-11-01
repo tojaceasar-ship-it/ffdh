@@ -1,0 +1,26 @@
+{
+  "defaults": {
+    "timeout": 1000,
+    "viewport": {
+      "width": 1280,
+      "height": 1024
+    },
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+    }
+  },
+  "urls": [
+    {
+      "url": "http://localhost:3000",
+      "actions": []
+    },
+    {
+      "url": "http://localhost:3000/sklep",
+      "actions": []
+    },
+    {
+      "url": "http://localhost:3000/sklep/koszyk",
+      "actions": []
+    }
+  ]
+}

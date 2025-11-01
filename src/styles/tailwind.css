@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bungee:wght@400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Core System Colors */
+    --color-background: #000000; /* black */
+    --color-foreground: #FFFFFF; /* white */
+    --color-border: #1a1a1a; /* gray-900 */
+    --color-input: #1a1a1a; /* gray-900 */
+    --color-ring: #FFD700; /* yellow-400 */
+    --color-card: #1a1a1a; /* gray-900 */
+    --color-card-foreground: #FFFFFF; /* white */
+    --color-popover: #1a1a1a; /* gray-900 */
+    --color-popover-foreground: #FFFFFF; /* white */
+    --color-muted: #333333; /* gray-800 */
+    --color-muted-foreground: #B0B0B0; /* gray-400 */
+
+    /* Brand Colors */
+    --color-primary: #FFD700; /* yellow-400 */
+    --color-primary-foreground: #000000; /* black */
+    --color-secondary: #00CED1; /* cyan-400 */
+    --color-secondary-foreground: #000000; /* black */
+    --color-accent: #FF4500; /* orange-600 */
+    --color-accent-foreground: #FFFFFF; /* white */
+
+    /* Status Colors */
+    --color-success: #32CD32; /* green-500 */
+    --color-success-foreground: #000000; /* black */
+    --color-warning: #FFA500; /* orange-400 */
+    --color-warning-foreground: #000000; /* black */
+    --color-error: #FF6B6B; /* red-400 */
+    --color-error-foreground: #FFFFFF; /* white */
+    --color-destructive: #FF6B6B; /* red-400 */
+    --color-destructive-foreground: #FFFFFF; /* white */
+
+    /* Text Colors */
+    --color-text-primary: #FFFFFF; /* white */
+    --color-text-secondary: #B0B0B0; /* gray-400 */
+
+    /* Surface Colors */
+    --color-surface: #1a1a1a; /* gray-900 */
+    --color-surface-foreground: #FFFFFF; /* white */
+
+    /* Neon Pink Colors */
+    --color-neon-pink: #FF1493;
+    --color-neon-pink-dark: #C71585;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Typography Classes */
+  .font-headline {
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .font-cta {
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  .font-accent {
+    font-family: 'Bungee', cursive;
+  }
+
+  .font-graffiti {
+    font-family: 'Bungee', cursive;
+  }
+
+  /* Neon Glow Effects */
+  .neon-glow-primary {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+
+  .neon-glow-secondary {
+    box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+  }
+
+  .neon-glow-accent {
+    box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+  }
+
+  /* Neon Pulse Animation */
+  @keyframes neon-pulse {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), 0 0 40px rgba(255, 215, 0, 0.2), 0 0 60px rgba(255, 215, 0, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.4), 0 0 60px rgba(255, 215, 0, 0.2);
+    }
+  }
+
+  .neon-pulse {
+    animation: neon-pulse 2s ease-in-out infinite;
+  }
+
+  /* Spray Paint Hover Effect */
+  .spray-paint-hover {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .spray-paint-hover:hover {
+    transform: scale(1.02);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+
+  /* Glitch Text Animation */
+  @keyframes glitch {
+    0% {
+      transform: skew(0deg);
+      filter: hue-rotate(0deg);
+    }
+    10% {
+      transform: skew(-2deg);
+      filter: hue-rotate(90deg);
+    }
+    20% {
+      transform: skew(2deg);
+      filter: hue-rotate(180deg);
+    }
+    30% {
+      transform: skew(-1deg);
+      filter: hue-rotate(270deg);
+    }
+    40% {
+      transform: skew(1deg);
+      filter: hue-rotate(360deg);
+    }
+    50% {
+      transform: skew(0deg);
+      filter: hue-rotate(0deg);
+    }
+    100% {
+      transform: skew(0deg);
+      filter: hue-rotate(0deg);
+    }
+  }
+
+  .glitch-text {
+    animation: glitch 0.1s ease-in-out;
+  }
+
+  /* Street Light Effect */
+  .street-light {
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+  }
+
+  /* Concrete Texture Overlay */
+  .concrete-texture {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='53' cy='53' r='1'/%3E%3Ccircle cx='37' cy='23' r='1'/%3E%3Ccircle cx='23' cy='37' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  /* Smooth Transitions */
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .transition-page {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary);
+  }
+}

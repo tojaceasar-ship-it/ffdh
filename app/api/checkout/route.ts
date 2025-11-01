@@ -1,24 +1,81 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { validateApiRequest, createCheckoutSessionSchema } from '@/lib/validation'
+import Stripe from 'stripe'
+import * as Sentry from '@sentry/nextjs'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-10-29.clover',
+})
 
 /**
  * POST /api/checkout
- * Handle checkout requests
+ * Create Stripe checkout session with validation
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    // Validate request data
+    const validation = await validateApiRequest(createCheckoutSessionSchema, request)
 
-    // For now, return mock response
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: validation.errors,
+        },
+        { status: 400 }
+      )
+    }
+
+    const { items, shipping, successUrl, cancelUrl } = validation.data
+
+    // Transform items for Stripe
+    const lineItems = items.map((item) => ({
+      price_data: {
+        currency: 'eur',
+        product_data: {
+          name: item.variantId, // TODO: Get actual product name
+          description: `Quantity: ${item.quantity}`,
+        },
+        unit_amount: Math.round(29.99 * 100), // TODO: Get actual price from product data
+      },
+      quantity: item.quantity,
+    }))
+
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      customer_email: shipping.email,
+      shipping_address_collection: {
+        allowed_countries: ['PL', 'US', 'GB', 'DE', 'FR'],
+      },
+      metadata: {
+        shipping_name: shipping.name,
+        shipping_address: shipping.address,
+        shipping_city: shipping.city,
+        shipping_postal_code: shipping.postalCode,
+        shipping_country: shipping.country,
+        shipping_phone: shipping.phone || '',
+      },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
+    })
+
+    console.log(`[Checkout] Created session: ${session.id}`)
+
     return NextResponse.json({
       success: true,
-      sessionId: 'cs_test_' + Date.now(),
-      url: process.env.NEXT_PUBLIC_APP_URL + '/success',
-      message: 'Checkout session created',
+      sessionId: session.id,
+      url: session.url,
     })
   } catch (error) {
     console.error('Checkout error:', error)
+    Sentry.captureException(error)
+
     return NextResponse.json(
-      { error: 'Checkout failed' },
+      { error: 'Checkout session creation failed' },
       { status: 500 }
     )
   }

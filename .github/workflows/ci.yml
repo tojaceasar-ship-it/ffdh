@@ -7,44 +7,8 @@ on:
     branches: [main, develop]
 
 jobs:
-  lint-and-test:
+  quality-gate:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Run tests
-        run: npm run test -- --coverage
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage/lcov.info
-
-  build:
-    runs-on: ubuntu-latest
-    needs: lint-and-test
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,53 +16,238 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: 'npm'
+          node-version: '20'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
-      - name: Build
-        run: npm run build
+      - name: Type check
+        run: yarn type-check
+
+      - name: Lint code
+        run: yarn lint
+
+      - name: Run unit tests
+        run: yarn test:unit
+
+      - name: Build application
+        run: yarn build
         env:
-          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
-          NEXT_PUBLIC_SANITY_DATASET: production
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: test
+          NEXT_PUBLIC_SANITY_DATASET: test
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_test
+          STRIPE_SECRET_KEY: sk_test_test
+          PRINTFUL_API_KEY: test
 
-      - name: Upload build artifact
+      - name: Export build snapshot
+        run: yarn tsx scripts/snapshot-exporter.ts build-complete
+        continue-on-error: true
+
+      - name: Upload snapshot artifacts
         uses: actions/upload-artifact@v3
+        if: always()
         with:
-          name: build
-          path: .next/
+          name: build-snapshot
+          path: snapshots/
+          retention-days: 7
 
-  deploy:
+  e2e-tests:
     runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
+    needs: quality-gate
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Vercel
-        uses: vercel/action@master
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        run: yarn test:e2e
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: test
+          NEXT_PUBLIC_SANITY_DATASET: test
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_test
+          STRIPE_SECRET_KEY: sk_test_test
+          PRINTFUL_API_KEY: test
+
+  accessibility-test:
+    runs-on: ubuntu-latest
+    needs: quality-gate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build application
+        run: yarn build
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: test
+          NEXT_PUBLIC_SANITY_DATASET: test
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_test
+          STRIPE_SECRET_KEY: sk_test_test
+          PRINTFUL_API_KEY: test
+
+      - name: Start preview server
+        run: yarn preview &
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: test
+          NEXT_PUBLIC_SANITY_DATASET: test
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_test
+          STRIPE_SECRET_KEY: sk_test_test
+          PRINTFUL_API_KEY: test
+
+      - name: Wait for server
+        run: sleep 10
+
+      - name: Run accessibility tests
+        run: yarn a11y:ci
+
+  performance-test:
+    runs-on: ubuntu-latest
+    needs: quality-gate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Lighthouse CI
+        run: yarn global add @lhci/cli || npm install -g @lhci/cli
+
+      - name: Build application
+        run: yarn build
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: test
+          NEXT_PUBLIC_SANITY_DATASET: test
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_test
+          STRIPE_SECRET_KEY: sk_test_test
+          PRINTFUL_API_KEY: test
+
+      - name: Start preview server
+        run: yarn preview &
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: test
+          NEXT_PUBLIC_SANITY_DATASET: test
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_test
+          STRIPE_SECRET_KEY: sk_test_test
+          PRINTFUL_API_KEY: test
+
+      - name: Wait for server
+        run: sleep 10
+
+      - name: Run Lighthouse performance tests
+        run: yarn lhci:desktop
+        continue-on-error: true
+
+  deploy-preview:
+    runs-on: ubuntu-latest
+    needs: [quality-gate, e2e-tests, accessibility-test, performance-test]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel (Preview)
+        uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod=false'
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
 
-  lighthouse:
+  deploy-production:
     runs-on: ubuntu-latest
-    needs: build
-
+    needs: [quality-gate, e2e-tests, accessibility-test, performance-test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Lighthouse
-        uses: treosh/lighthouse-ci-action@v10
+      - name: Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
         with:
-          uploadArtifacts: true
-          temporaryPublicStorage: true
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod=true'
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+
+  smoke-test-production:
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run smoke tests on production
+        run: npx playwright test tests/smoke/
+        env:
+          BASE_URL: ${{ secrets.PRODUCTION_URL }}
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [deploy-production, smoke-test-production]
+    if: always() && github.ref == 'refs/heads/main'
+    steps:
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "🚨 Deployment failed!"
+          echo "Check the logs above for details."
+
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "Production URL: ${{ secrets.PRODUCTION_URL }}"

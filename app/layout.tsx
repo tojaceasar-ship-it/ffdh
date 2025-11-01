@@ -1,5 +1,11 @@
 import type { Metadata } from 'next'
-import { Orbitron, Inter } from 'next/font/google'
+import { Orbitron, Inter, Rajdhani, Bungee } from 'next/font/google'
+import { Provider } from 'react-redux'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { store } from '../src/store'
+import ErrorBoundary from '../src/components/ErrorBoundary'
+import ScrollToTop from '../src/components/ScrollToTop'
+import '../src/styles/globals.css'
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -13,10 +19,68 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+const rajdhani = Rajdhani({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-rajdhani',
+})
+
+const bungee = Bungee({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-bungee',
+})
+
 export const metadata: Metadata = {
   title: 'Fruits From Da Hood',
   description: 'Urban streetwear & emotional AI scenes',
+  keywords: 'streetwear, urban fashion, fruit characters, premium clothing',
+  authors: [{ name: 'Fruits From Da Hood' }],
+  creator: 'Fruits From Da Hood',
+  publisher: 'Fruits From Da Hood',
+  openGraph: {
+    title: 'Fruits From Da Hood | Premium Streetwear',
+    description: 'Discover premium streetwear inspired by urban culture and fruit characters',
+    url: 'https://fruitsfromdahood.pl',
+    siteName: 'Fruits From Da Hood',
+    images: [
+      {
+        url: '/assets/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Fruits From Da Hood',
+      },
+    ],
+    locale: 'pl_PL',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Fruits From Da Hood | Premium Streetwear',
+    description: 'Discover premium streetwear inspired by urban culture and fruit characters',
+    images: ['/assets/images/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime in v4)
+    },
+  },
+})
 
 export default function RootLayout({
   children,
@@ -24,9 +88,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body style={{ margin: 0, padding: 0, fontFamily: 'system-ui' }}>
-        {children}
+    <html lang="pl" className={`${orbitron.variable} ${inter.variable} ${rajdhani.variable} ${bungee.variable}`}>
+      <body className="font-inter antialiased">
+        <Provider store={store}>
+          <QueryClientProvider client={queryClient}>
+            <ErrorBoundary>
+              <ScrollToTop />
+              {children}
+            </ErrorBoundary>
+          </QueryClientProvider>
+        </Provider>
       </body>
     </html>
   )
