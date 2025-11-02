@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { validateApiRequest, createCheckoutSessionSchema } from '@/lib/validation'
 import Stripe from 'stripe'
 import * as Sentry from '@sentry/nextjs'
+import { fetchProductBySlug } from '../../../src/services/productService'
 
 /**
  * POST /api/checkout
@@ -37,18 +38,31 @@ export async function POST(request: NextRequest) {
 
     const stripe = new Stripe(stripeKey)
 
-    // Transform items for Stripe
-    const lineItems = items.map((item) => ({
-      price_data: {
-        currency: 'eur',
-        product_data: {
-          name: item.variantId, // TODO: Get actual product name
-          description: `Quantity: ${item.quantity}`,
-        },
-        unit_amount: Math.round(29.99 * 100), // TODO: Get actual price from product data
-      },
-      quantity: item.quantity,
-    }))
+    // Transform items for Stripe with real product data
+    const lineItems = await Promise.all(
+      items.map(async (item) => {
+        // Extract product slug from variant ID (assuming format: "product-slug-variant")
+        const productSlug = item.variantId.split('-').slice(0, -1).join('-') || item.variantId;
+
+        // Fetch real product data
+        const product = await fetchProductBySlug(productSlug);
+
+        return {
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: product?.name || item.variantId, // Use real name or fallback to variant ID
+              description: `Quantity: ${item.quantity}${product?.description ? ` - ${product.description}` : ''}`,
+              images: product?.imageUrl ? [product.imageUrl] : undefined,
+            },
+            unit_amount: product?.priceEUR
+              ? Math.round(product.priceEUR * 100) // Convert EUR to cents
+              : Math.round(29.99 * 100), // Fallback price
+          },
+          quantity: item.quantity,
+        };
+      })
+    );
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
