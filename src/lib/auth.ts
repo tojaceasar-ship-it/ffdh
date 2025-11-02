@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
-import type { NextAuthOptions, JWT, Session } from 'next-auth'
+import type { NextAuthOptions, Session } from 'next-auth'
+import type { JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { SupabaseAdapter } from '@next-auth/supabase-adapter'
 import { createClient } from '@supabase/supabase-js'
