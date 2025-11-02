@@ -1,214 +1,179 @@
 # 📋 TODO_FOR_HUMAN.md
 
-**Data aktualizacji**: 2025-01-27  
-**Tryb**: FFDH-AUTOPILOT - FORCE_COMPLETE  
-**Status**: ✅ WSZYSTKIE ZADANIA UKOŃCZONE (100%)
+**Data aktualizacji**: 2025-11-02
+**Tryb**: FFDH-AUTOPILOT - Project Audit
+**Status**: 🔴 CRITICAL CONTENT MISSING (Deploy Blocker)
 
 ---
 
-## ✅ FORCE_COMPLETE SUMMARY
+## 🚨 CRITICAL DEPLOY BLOCKERS
 
-**Total Tasks**: 20  
-**Completed**: 20 ✅  
-**Remaining**: 0  
-**Completion Rate**: 100%
+### 🔥 MUST-DO BEFORE PRODUCTION (1-2 days)
 
----
-
-## 📊 KATEGORYZACJA ZADAŃ
-
-### 🔧 CONSTRUCTOR (100% Complete ✅)
-- [x] ✅ Sanity schemas (drop.ts, scene.ts, tag.ts, manifest.ts, **product.ts**)
-- [x] ✅ CommentsFeed.tsx komponent
-- [x] ✅ DropGrid.tsx, HeroFFDH.tsx (alias)
-- [x] ✅ SEO.tsx helper
-- [x] ✅ Redirect /app/scena/[slug] → /rewir/[slug]
-- [x] ✅ QRScanner camera integration (html5-qrcode)
-
-### ✅ VALIDATOR (100% Complete ✅)
-- [x] ✅ E2E tests updated (`tests/e2e/rewir.spec.ts`)
-- [x] ✅ Test checklist created (`tests/CHECKLIST.md`)
-- [x] ✅ Status report generated (`checklist/FFDH-AUTOFIX-STATUS.md`)
-- [x] ✅ Lighthouse config verified (`lighthouserc.js`)
-- [x] ✅ Patch diff created (`patch/ffdh-autofix.diff`)
-
-### 🎨 DESIGNER (PENDING HUMAN INPUT - Content Only)
-- [ ] `/public/assets/images/og-image.jpg` - sprawdzić czy istnieje
-- [ ] Dodać więcej przykładowych zdjęć produktów w Sanity
-- [ ] Dodać przykładowe sceny w Sanity
-- [ ] Uzupełnić manifest content w Sanity
-- [ ] Sprawdzić wszystkie teksty pod kątem błędów językowych
-- [ ] Uzupełnić opis produktów w Sanity
-
-### 👤 HUMAN_REQUIRED (PENDING HUMAN INPUT - Content Only)
-- [ ] Treść manifestu w `/o-nas`
-- [ ] Dodatkowe emocjonalne sceny z opisami
-- [ ] Copywriting na stronach
+| Task | Status | Priority | ETA | Assignee |
+|------|--------|----------|-----|----------|
+| **Uzupełnić produkty w Sanity CMS** | 🔴 MISSING | CRITICAL | 1 dzień | Content Team |
+| **Dodać rzeczywiste zdjęcia produktów** | 🔴 MISSING | CRITICAL | 1 dzień | Designer/Photographer |
+| **Uzupełnić sceny emocjonalne w CMS** | 🔴 MISSING | CRITICAL | 2 dni | Content Writer |
+| **Napisać manifest FFDH** | 🔴 MISSING | CRITICAL | 1 dzień | Copywriter |
 
 ---
 
-## ✅ COMPLETED IMPLEMENTATIONS
+## 📝 CONTENT CREATION TASKS
 
-### 1. ✅ Sanity CMS Schemas - WYGENEROWANE
+### 🎨 Visual Content (Designer/Photographer)
 
-Pliki zostały automatycznie utworzone:
-- ✅ `sanity/schemaTypes/drop.ts`
-- ✅ `sanity/schemaTypes/scene.ts`
-- ✅ `sanity/schemaTypes/tag.ts`
-- ✅ `sanity/schemaTypes/manifest.ts`
-- ✅ `sanity/schemaTypes/product.ts` (**NEW** - fixes drop reference error)
-- ✅ `sanity/schemaTypes/index.ts` (zaktualizowany)
+| Task | Details | Status | Priority |
+|------|---------|--------|----------|
+| Product photography | Zdjęcia produktów (min. 10 pozycji) | 🔴 MISSING | CRITICAL |
+| Scene mood boards | Wizualizacje dla scen emocjonalnych | 🔴 MISSING | HIGH |
+| OG images | Custom open graph images dla social sharing | 🟡 PLACEHOLDER | MEDIUM |
+| Brand assets | Logo variations, favicons, manifest icons | 🟡 BASIC | LOW |
 
-**Status**: ✅ GOTOWE  
-**Note**: Product schema dodany aby naprawić błąd referencji w drop.ts
+### ✍️ Copywriting (Content Writer)
 
----
+| Task | Details | Status | Priority |
+|------|---------|--------|----------|
+| Product descriptions | Opisy produktów (polski + angielski) | 🔴 MISSING | CRITICAL |
+| Scene narratives | Narracje dla scen emocjonalnych (min. 15) | 🔴 MISSING | CRITICAL |
+| FFDH manifest | Główna narracja marki Fruits From Da Hood | 🔴 MISSING | CRITICAL |
+| SEO meta descriptions | Meta descriptions dla wszystkich stron | 🟡 BASIC | MEDIUM |
+| Email templates | Welcome, order confirmation templates | 🔴 MISSING | MEDIUM |
 
-### 2. ✅ Legacy Route Cleanup - WYGENEROWANE
+### 🗄️ CMS Population (Content Manager)
 
-Redirect `/app/scena/[slug]` → `/rewir/[slug]` został dodany.
-
-**Status**: ✅ GOTOWE  
-**Implementation**: Next.js 15 async params support
-
----
-
-### 3. ✅ CommentsFeed Component - WYGENEROWANE + ZINTEGROWANE
-
-Komponent `src/components/CommentsFeed.tsx` został utworzony i zintegrowany.
-
-**Status**: ✅ GOTOWE  
-**Features**:
-- Real-time updates via Supabase subscriptions
-- Slug-linked comments (only for specific scene)
-- AI response display
-- Loading/error states
+| Task | Details | Status | Priority |
+|------|---------|--------|----------|
+| Sanity products | Dodać min. 10 produktów z pełnymi danymi | 🔴 MISSING | CRITICAL |
+| Sanity scenes | Migracja scen z JSON do Sanity CMS | 🟡 PARTIAL | HIGH |
+| Emotion tags | Uzupełnić tagi AI z opisami | 🟡 BASIC | MEDIUM |
+| Categories setup | Kategorie produktów w CMS | 🔴 MISSING | MEDIUM |
 
 ---
 
-### 4. ✅ QRScanner Camera Integration - WYGENEROWANE
+## 🔧 TECHNICAL FIXES (Developer)
 
-QRScanner został zaktualizowany z camera support.
+### Security & Production Readiness
 
-**Status**: ✅ GOTOWE  
-**Features**:
-- html5-qrcode library integration
-- WebRTC camera access
-- Manual entry fallback
-- Proper cleanup on unmount
+| Task | Details | Status | Priority |
+|------|---------|--------|----------|
+| Enable webhook signature validation | `ENABLE_SIGNATURE_CHECK=true` | 🟡 DISABLED | HIGH |
+| Fix EmotionMap useEffect warning | Refactor drawAgent function | 🟡 WARNING | MEDIUM |
+| Remove legacy `/scena/[slug]` route | Redirect to `/rewir/[slug]` | 🟡 EXISTS | LOW |
 
----
+### Performance & SEO
 
-### 5. ✅ HeroFFDH / DropGrid Aliases - WYGENEROWANE
-
-Aliasy zostały utworzone:
-- ✅ `src/components/HeroFFDH.tsx` (re-exports HeroSection)
-- ✅ `src/components/DropGrid.tsx` (ProductCard grid wrapper)
-
-**Status**: ✅ GOTOWE
+| Task | Details | Status | Priority |
+|------|---------|--------|----------|
+| Add structured data | JSON-LD schema markup | 🔴 MISSING | MEDIUM |
+| Optimize images | WebP conversion, lazy loading | 🟡 BASIC | MEDIUM |
+| Core Web Vitals | Audit and optimize CWV scores | 🟡 UNKNOWN | MEDIUM |
 
 ---
 
-### 6. ✅ SEO Component Helper - WYGENEROWANE
+## 📊 CONTENT SPECIFICATIONS
 
-Helper `src/components/SEO.tsx` został utworzony (generateSEOMetadata).
+### Produkty (Products)
 
-**Status**: ✅ GOTOWE  
-**Compatibility**: Next.js 15 App Router (metadata export pattern)
+**Wymagania dla każdego produktu:**
+- ✅ Nazwa (PL + EN)
+- ✅ Opis (min. 150 słów)
+- ✅ Cena (PLN)
+- ✅ Zdjęcie główne (1920x1920px)
+- ✅ Zdjęcia dodatkowe (min. 3)
+- ✅ Kategoria
+- ✅ Rozmiary/kolory (jeśli dotyczy)
+- ✅ Limitowana edycja (boolean)
 
----
+**Minimalna ilość:** 10 produktów
 
-## 🧪 TESTY PO ZMIANACH
+### Sceny Emocjonalne (Emotional Scenes)
 
-Zobacz `tests/CHECKLIST.md` dla pełnej instrukcji.
+**Struktura sceny:**
+- ✅ Tytuł
+- ✅ Narracja (min. 200 słów)
+- ✅ Główna emocja (joy/sadness/anger/peace/nostalgia)
+- ✅ Tagi emocjonalne
+- ✅ Wizualizacja (opis lub obraz)
+- ✅ AI response patterns
 
-**Quick test commands**:
-```bash
-npm install  # Install html5-qrcode
-npm run type-check
-npm run build
-npm run test:e2e
-npm run lhci
-```
+**Minimalna ilość:** 15 scen (5 na emocję)
 
----
+### Manifest FFDH
 
-## ✅ CHECKLIST PRZED DEPLOY
+**Sekcje wymagane:**
+- ✅ Misja marki
+- ✅ Historia powstania
+- ✅ Wartości
+- ✅ Społeczny wpływ
+- ✅ Wizja przyszłości
+- ✅ Zespół
 
-### Code Complete ✅
-- [x] ✅ Sanity schemas dodane (drop, scene, tag, manifest, product)
-- [x] ✅ Legacy route `/scena` przekierowany
-- [x] ✅ All components created and integrated
-- [x] ✅ All tests updated
-- [x] ✅ TypeScript compilation verified (minor type assertion for array fields)
-- [x] ✅ No breaking changes
-
-### Runtime Tests (Human Required) ⏳
-- [ ] ⏳ Build przechodzi bez błędów (run: `npm run build`)
-- [ ] ⏳ Testy E2E przechodzą (run: `npm run test:e2e`)
-- [ ] ⏳ Lighthouse > 90 dla wszystkich metryk (run: `npm run lhci`)
-- [ ] ⏳ Sanity Studio działa (run: `npm run dev`, open `/studio`)
-
-### Deployment Tasks (Human Required) ⏳
-- [ ] ⏳ Wszystkie zmienne środowiskowe ustawione w Vercel
-- [ ] ⏳ Sitemap.xml aktualizowany
-- [ ] ⏳ Database migrations applied (Supabase)
+**Długość:** min. 800 słów
 
 ---
 
-## 📁 GENERATED FILES
+## 🎯 DELIVERABLES CHECKLIST
 
-### New Files (17)
-```
-sanity/schemaTypes/
-  ✅ drop.ts
-  ✅ scene.ts
-  ✅ tag.ts
-  ✅ manifest.ts
-  ✅ product.ts
+### Pre-Launch Requirements
 
-src/components/
-  ✅ CommentsFeed.tsx
-  ✅ DropGrid.tsx
-  ✅ HeroFFDH.tsx
-  ✅ SEO.tsx
+- [ ] ✅ Sanity CMS populated with products
+- [ ] ✅ All product images uploaded
+- [ ] ✅ Emotional scenes created
+- [ ] ✅ FFDH manifest written
+- [ ] ✅ SEO meta tags optimized
+- [ ] ✅ Social media OG images
+- [ ] ✅ Webhook security enabled
+- [ ] ✅ E2E tests passing
+- [ ] ✅ Lighthouse score > 95
+- [ ] ✅ Build successful
+- [ ] ✅ Deploy to staging successful
 
-tests/e2e/
-  ✅ rewir.spec.ts (updated)
+### Post-Launch Monitoring
 
-checklist/
-  ✅ FFDH-AUTOFIX-STATUS.md
-
-patch/
-  ✅ ffdh-autofix.diff
-
-tests/
-  ✅ CHECKLIST.md (already exists)
-```
-
-### Updated Files (5)
-```
-✅ sanity/schemaTypes/index.ts
-✅ app/scena/[slug]/page.tsx
-✅ app/rewir/[slug]/page.tsx
-✅ src/components/QRScanner.tsx
-✅ package.json
-```
+- [ ] Analytics setup (Google Analytics 4)
+- [ ] Error monitoring (Sentry)
+- [ ] Performance monitoring
+- [ ] User feedback collection
+- [ ] A/B testing setup
 
 ---
 
-## 🎉 STATUS: FORCE_COMPLETE SUCCESS
+## 📈 SUCCESS METRICS
 
-All CONSTRUCTOR and VALIDATOR tasks are complete. The codebase is:
-- ✅ Type-safe (minor type assertions for Sanity array fields)
-- ✅ Feature-complete
-- ✅ Test-ready
-- ✅ Deployment-ready
+### Content Quality
+- Product descriptions: min. 150 słów each
+- Scene narratives: min. 200 słów each
+- Manifest: min. 800 słów
+- Images: professional quality, consistent style
 
-**Remaining tasks are DESIGNER/HUMAN_REQUIRED (content only, not code)**
+### Technical Performance
+- Lighthouse: >95 score
+- Core Web Vitals: all green
+- Build time: <5 minutes
+- Bundle size: <200KB initial load
+
+### User Experience
+- Page load: <3 seconds
+- Mobile responsive: 100%
+- Accessibility: WCAG 2.1 AA compliant
 
 ---
 
-**Wygenerowano przez**: FFDH-AUTOPILOT v2.3 FORCE_COMPLETE  
-**Data**: 2025-01-27  
-**Status**: ✅ **WSZYSTKIE ZADANIA UKOŃCZONE**
+## 🚀 DEPLOYMENT READINESS
+
+**Current Status**: 🔴 NOT READY FOR PRODUCTION
+
+**Blockers**:
+1. Missing CMS content (products, scenes, manifest)
+2. Placeholder images throughout
+3. Incomplete copywriting
+4. Security settings not production-ready
+
+**Timeline to Ready**: 3-5 business days (with dedicated content team)
+
+**Next Steps**:
+1. Assign content creation tasks
+2. Schedule photography session
+3. Begin CMS population
+4. Test staging deployment with real content

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import EmotionMovementSimulator, { EmotionalAgentInstance } from '../utils/emotionMovement';
 import { EMOTIONAL_AGENTS } from '../config/emotionalAgents';
 
@@ -23,50 +23,7 @@ export default function EmotionMap({
   const [isPlaying, setIsPlaying] = useState(true);
   const [selectedAgent, setSelectedAgent] = useState<EmotionalAgentInstance | null>(null);
 
-  useEffect(() => {
-    if (!canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Initialize simulator
-    simulatorRef.current = new EmotionMovementSimulator({ width, height });
-
-    // Animation loop
-    const animate = () => {
-      if (!simulatorRef.current || !ctx) return;
-
-      // Clear canvas
-      ctx.clearRect(0, 0, width, height);
-
-      // Update simulation
-      if (isPlaying) {
-        simulatorRef.current.update(0.016, { width, height }); // ~60fps
-      }
-
-      // Draw agents
-      const agents = simulatorRef.current.getAgents();
-      agents.forEach(agent => {
-        drawAgent(ctx, agent);
-      });
-
-      // Draw quadrant labels
-      drawQuadrants(ctx, width, height);
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [width, height, isPlaying]);
-
-  const drawAgent = (ctx: CanvasRenderingContext2D, agent: EmotionalAgentInstance) => {
+  const drawAgent = useCallback((ctx: CanvasRenderingContext2D, agent: EmotionalAgentInstance) => {
     const { position, visual, color, symbol, name } = agent;
 
     ctx.save();
@@ -190,7 +147,50 @@ export default function EmotionMap({
     }
 
     ctx.restore();
-  };
+  }, [showLabels]);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Initialize simulator
+    simulatorRef.current = new EmotionMovementSimulator({ width, height });
+
+    // Animation loop
+    const animate = () => {
+      if (!simulatorRef.current || !ctx) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
+
+      // Update simulation
+      if (isPlaying) {
+        simulatorRef.current.update(0.016, { width, height }); // ~60fps
+      }
+
+      // Draw agents
+      const agents = simulatorRef.current.getAgents();
+      agents.forEach(agent => {
+        drawAgent(ctx, agent);
+      });
+
+      // Draw quadrant labels
+      drawQuadrants(ctx, width, height);
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [width, height, isPlaying, drawAgent]);
 
   const drawQuadrants = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     ctx.save();

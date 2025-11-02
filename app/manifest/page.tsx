@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 import { sanityFetch } from '@/lib/sanity'
 import { PortableText } from '@portabletext/react'
 
@@ -231,12 +232,12 @@ export default async function ManifestPage() {
               >
                 Explore Our World
               </a>
-              <a
+              <Link
                 href="/rewir"
                 className="px-8 py-4 border border-white/20 text-white font-semibold uppercase tracking-wider rounded-full hover:border-white/40 hover:bg-white/10 transition-colors"
               >
                 Create Your Story
-              </a>
+              </Link>
             </div>
           </div>
         </div>
