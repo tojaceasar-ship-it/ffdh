@@ -2,6 +2,7 @@
 
 import { Provider } from 'react-redux'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { SessionProvider } from 'next-auth/react'
 import { store } from '../store'
 import { MoodProvider } from '../contexts/MoodContext'
 
@@ -18,9 +19,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <MoodProvider>
-          {children}
-        </MoodProvider>
+        <SessionProvider>
+          <MoodProvider>
+            {children}
+          </MoodProvider>
+        </SessionProvider>
       </QueryClientProvider>
     </Provider>
   )

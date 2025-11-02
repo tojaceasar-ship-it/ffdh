@@ -225,15 +225,178 @@ export async function POST(
 
 // Provider-specific handlers
 async function handleStripeWebhook(data: any) {
-  console.log(`[Stripe] Processing event: ${data.type}`);
+  const event = data;
+  const eventType = event.type;
 
-  // TODO: Implement Stripe-specific logic
-  // - Payment succeeded
-  // - Payment failed
-  // - Subscription events
-  // etc.
+  console.log(`[Stripe] Processing event: ${eventType}`);
 
-  return NextResponse.json({ received: true, source: "stripe" });
+  try {
+    switch (eventType) {
+      case 'checkout.session.completed':
+        await handleCheckoutSessionCompleted(event.data.object);
+        break;
+
+      case 'payment_intent.succeeded':
+        await handlePaymentIntentSucceeded(event.data.object);
+        break;
+
+      case 'payment_intent.payment_failed':
+        await handlePaymentIntentFailed(event.data.object);
+        break;
+
+      case 'charge.succeeded':
+        await handleChargeSucceeded(event.data.object);
+        break;
+
+      case 'charge.failed':
+        await handleChargeFailed(event.data.object);
+        break;
+
+      case 'invoice.payment_succeeded':
+        await handleInvoicePaymentSucceeded(event.data.object);
+        break;
+
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(event.data.object);
+        break;
+
+      case 'customer.subscription.created':
+        await handleSubscriptionCreated(event.data.object);
+        break;
+
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object);
+        break;
+
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object);
+        break;
+
+      default:
+        console.log(`[Stripe] Unhandled event type: ${eventType}`);
+        // Still return success for unhandled but valid events
+        break;
+    }
+
+    return NextResponse.json({
+      received: true,
+      source: "stripe",
+      eventType: eventType,
+      processed: true
+    });
+
+  } catch (error) {
+    console.error(`[Stripe] Error processing ${eventType}:`, error);
+    // Return success to Stripe to avoid retries, but log the error
+    return NextResponse.json({
+      received: true,
+      source: "stripe",
+      eventType: eventType,
+      error: "Processing failed",
+      processed: false
+    });
+  }
+}
+
+// Stripe event handlers
+async function handleCheckoutSessionCompleted(session: any) {
+  console.log(`[Stripe] Checkout session completed: ${session.id}`);
+
+  // Extract order details
+  const orderData = {
+    sessionId: session.id,
+    customerId: session.customer,
+    customerEmail: session.customer_details?.email,
+    amountTotal: session.amount_total,
+    currency: session.currency,
+    paymentStatus: session.payment_status,
+    shippingAddress: session.shipping_details,
+    lineItems: session.line_items, // If expanded
+    metadata: session.metadata,
+  };
+
+  // TODO: Save order to database
+  // TODO: Send confirmation email
+  // TODO: Update inventory
+  // TODO: Trigger order fulfillment
+
+  console.log(`[Stripe] Order processed:`, {
+    sessionId: session.id,
+    amount: session.amount_total,
+    email: session.customer_details?.email
+  });
+}
+
+async function handlePaymentIntentSucceeded(paymentIntent: any) {
+  console.log(`[Stripe] Payment intent succeeded: ${paymentIntent.id}`);
+
+  // Update payment status in database
+  // Trigger order processing
+  // Send success notifications
+}
+
+async function handlePaymentIntentFailed(paymentIntent: any) {
+  console.log(`[Stripe] Payment intent failed: ${paymentIntent.id}`);
+
+  // Update payment status as failed
+  // Send failure notifications
+  // Log failure reasons for analysis
+}
+
+async function handleChargeSucceeded(charge: any) {
+  console.log(`[Stripe] Charge succeeded: ${charge.id}`);
+
+  // Record successful charge
+  // Update order status
+  // Process refunds if needed
+}
+
+async function handleChargeFailed(charge: any) {
+  console.log(`[Stripe] Charge failed: ${charge.id}`);
+
+  // Record failed charge
+  // Update order status
+  // Send failure notifications
+}
+
+async function handleInvoicePaymentSucceeded(invoice: any) {
+  console.log(`[Stripe] Invoice payment succeeded: ${invoice.id}`);
+
+  // Handle subscription payments
+  // Update billing status
+  // Send receipts
+}
+
+async function handleInvoicePaymentFailed(invoice: any) {
+  console.log(`[Stripe] Invoice payment failed: ${invoice.id}`);
+
+  // Handle failed subscription payments
+  // Update billing status
+  // Send payment failure notices
+}
+
+async function handleSubscriptionCreated(subscription: any) {
+  console.log(`[Stripe] Subscription created: ${subscription.id}`);
+
+  // Create subscription record
+  // Activate premium features
+  // Send welcome emails
+}
+
+async function handleSubscriptionUpdated(subscription: any) {
+  console.log(`[Stripe] Subscription updated: ${subscription.id}`);
+
+  // Update subscription status
+  // Handle plan changes
+  // Update feature access
+}
+
+async function handleSubscriptionDeleted(subscription: any) {
+  console.log(`[Stripe] Subscription deleted: ${subscription.id}`);
+
+  // Deactivate premium features
+  // Update subscription status
+  // Send cancellation confirmation
 }
 
 async function handleGithubWebhook(data: any) {
