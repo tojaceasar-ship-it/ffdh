@@ -1,0 +1,420 @@
+[
+  {
+    "id": "TASK-POPULATE-CMS",
+    "title": "Populate Sanity CMS with production content",
+    "priority": "P2",
+    "type": "content",
+    "area": "cms",
+    "description": "Add production-ready content to Sanity CMS (manifest, scenes, products)",
+    "acceptance": [
+      "Manifest page displays brand content",
+      "Sample scenes available in /rewir",
+      "Product catalog populated",
+      "Content renders without errors"
+    ],
+    "files_to_change": [
+      "sanity/studio (content creation)",
+      "app/manifest/page.tsx (verify rendering)"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 2
+  },
+  {
+    "id": "TASK-CONFIGURE-PRINTFUL",
+    "title": "Configure Printful API credentials",
+    "priority": "P2",
+    "type": "integration",
+    "area": "api",
+    "description": "Add PRINTFUL_API_KEY to enable order fulfillment",
+    "acceptance": [
+      "/api/printful returns 200 for valid requests",
+      "Order fulfillment working",
+      "Product sync operational"
+    ],
+    "files_to_change": [
+      ".env.local",
+      ".env.production.local"
+    ],
+    "dependencies": ["TASK-POPULATE-CMS"],
+    "risk": "low",
+    "est_time_h": 0.5
+  },
+  {
+    "id": "TASK-IMPLEMENT-CHECKOUT-PRODUCT-DATA",
+    "title": "Implement dynamic product data in checkout",
+    "priority": "P2",
+    "type": "bug",
+    "area": "api",
+    "description": "Replace hardcoded prices with dynamic product data fetching",
+    "acceptance": [
+      "Checkout uses real product prices",
+      "Product names dynamically loaded",
+      "No more TODO comments in checkout"
+    ],
+    "files_to_change": [
+      "app/api/checkout/route.ts",
+      "src/services/productService.ts"
+    ],
+    "dependencies": ["TASK-POPULATE-CMS"],
+    "risk": "low",
+    "est_time_h": 1
+  },
+  {
+    "id": "TASK-IMPLEMENT-STRIPE-WEBHOOK-LOGIC",
+    "title": "Implement Stripe-specific webhook processing",
+    "priority": "P2",
+    "type": "feature",
+    "area": "api",
+    "description": "Add specific Stripe webhook event handling logic",
+    "acceptance": [
+      "Stripe webhooks processed correctly",
+      "Payment events handled properly",
+      "Order status updates work"
+    ],
+    "files_to_change": [
+      "app/api/webhooks/[source]/route.ts"
+    ],
+    "dependencies": [],
+    "risk": "medium",
+    "est_time_h": 2
+  },
+  {
+    "id": "TASK-GENERATE-SITEMAP",
+    "title": "Generate dynamic sitemap.xml",
+    "priority": "P2",
+    "type": "seo",
+    "area": "seo",
+    "description": "Implement next-sitemap for SEO optimization",
+    "acceptance": [
+      "/sitemap.xml accessible",
+      "All routes included",
+      "Dynamic content indexed",
+      "Search engines can crawl properly"
+    ],
+    "files_to_change": [
+      "next-sitemap.config.js",
+      "package.json (add next-sitemap)",
+      "app/sitemap.ts"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 1
+  },
+  {
+    "id": "TASK-PERFORMANCE-AUDIT",
+    "title": "Conduct Lighthouse performance audit",
+    "priority": "P2",
+    "type": "perf",
+    "area": "perf",
+    "description": "Run Lighthouse audits and optimize Core Web Vitals",
+    "acceptance": [
+      "Lighthouse Mobile ≥ 95",
+      "Lighthouse Desktop ≥ 95",
+      "Core Web Vitals all green",
+      "Bundle size optimized"
+    ],
+    "files_to_change": [
+      "next.config.js (optimizations)",
+      "components/* (lazy loading)",
+      "package.json (bundle analyzer)"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 2
+  },
+  {
+    "id": "TASK-ADD-E2E-TESTS",
+    "title": "Implement end-to-end testing suite",
+    "priority": "P2",
+    "type": "testing",
+    "area": "tests",
+    "description": "Add Playwright E2E tests for critical user journeys",
+    "acceptance": [
+      "E2E tests cover 70% of critical paths",
+      "CI/CD includes E2E validation",
+      "User journeys tested automatically"
+    ],
+    "files_to_change": [
+      "tests/e2e/*.spec.ts",
+      "playwright.config.ts",
+      ".github/workflows/ci.yml"
+    ],
+    "dependencies": [],
+    "risk": "medium",
+    "est_time_h": 3
+  },
+  {
+    "id": "TASK-IMPLEMENT-AUTH",
+    "title": "Implement user authentication system",
+    "priority": "P2",
+    "type": "feature",
+    "area": "auth",
+    "description": "Add Supabase Auth with login/register forms and protected routes",
+    "acceptance": [
+      "User registration/login works",
+      "Protected routes functional",
+      "Profile management available",
+      "Social login options"
+    ],
+    "files_to_change": [
+      "app/auth/login/page.tsx",
+      "app/auth/register/page.tsx",
+      "src/components/AuthModal.tsx",
+      "src/hooks/useAuth.ts",
+      "middleware.ts"
+    ],
+    "dependencies": [],
+    "risk": "medium",
+    "est_time_h": 4
+  },
+  {
+    "id": "TASK-ENABLE-WEBHOOK-VERIFICATION",
+    "title": "Enable webhook signature verification for production",
+    "priority": "P2",
+    "type": "security",
+    "area": "security",
+    "description": "Enable ENABLE_SIGNATURE_CHECK environment variable for production security",
+    "acceptance": [
+      "Webhook verification active in production",
+      "Invalid webhooks rejected with 401",
+      "Security warnings removed"
+    ],
+    "files_to_change": [
+      ".env.production.local",
+      "app/api/webhooks/[source]/route.ts"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 0.5
+  },
+  {
+    "id": "TASK-IMPLEMENT-AUTH",
+    "title": "Implement user authentication system",
+    "priority": "P2",
+    "type": "feature",
+    "area": "auth",
+    "description": "Add Supabase Auth with login/register forms and protected routes",
+    "acceptance": [
+      "User registration/login works",
+      "Protected routes functional",
+      "Profile management available",
+      "Social login options"
+    ],
+    "files_to_change": [
+      "app/auth/login/page.tsx",
+      "app/auth/register/page.tsx",
+      "src/components/AuthModal.tsx",
+      "src/hooks/useAuth.ts",
+      "middleware.ts"
+    ],
+    "dependencies": [],
+    "risk": "medium",
+    "est_time_h": 4
+  },
+  {
+    "id": "TASK-ADD-E2E-TESTS",
+    "title": "Implement end-to-end testing suite",
+    "priority": "P2",
+    "type": "testing",
+    "area": "tests",
+    "description": "Add Playwright E2E tests for critical user journeys",
+    "acceptance": [
+      "E2E tests cover 70% of critical paths",
+      "CI/CD includes E2E validation",
+      "User journeys tested automatically"
+    ],
+    "files_to_change": [
+      "tests/e2e/*.spec.ts",
+      "playwright.config.ts",
+      ".github/workflows/ci.yml"
+    ],
+    "dependencies": [],
+    "risk": "medium",
+    "est_time_h": 3
+  },
+  {
+    "id": "TASK-GENERATE-SITEMAP",
+    "title": "Generate dynamic sitemap.xml",
+    "priority": "P2",
+    "type": "seo",
+    "area": "seo",
+    "description": "Implement next-sitemap for SEO optimization",
+    "acceptance": [
+      "/sitemap.xml accessible",
+      "All routes included",
+      "Dynamic content indexed",
+      "Search engines can crawl properly"
+    ],
+    "files_to_change": [
+      "next-sitemap.config.js",
+      "package.json (add next-sitemap)",
+      "app/sitemap.ts"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 1
+  },
+  {
+    "id": "TASK-PERFORMANCE-AUDIT",
+    "title": "Conduct Lighthouse performance audit",
+    "priority": "P2",
+    "type": "perf",
+    "area": "perf",
+    "description": "Run Lighthouse audits and optimize Core Web Vitals",
+    "acceptance": [
+      "Lighthouse Mobile ≥ 95",
+      "Lighthouse Desktop ≥ 95",
+      "Core Web Vitals all green",
+      "Bundle size optimized"
+    ],
+    "files_to_change": [
+      "next.config.js (optimizations)",
+      "components/* (lazy loading)",
+      "package.json (bundle analyzer)"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 2
+  },
+  {
+    "id": "TASK-CONFIGURE-PRINTFUL",
+    "title": "Configure Printful API credentials",
+    "priority": "P2",
+    "type": "integration",
+    "area": "api",
+    "description": "Add PRINTFUL_API_KEY to enable order fulfillment",
+    "acceptance": [
+      "/api/printful returns 200 for valid requests",
+      "Order fulfillment working",
+      "Product sync operational"
+    ],
+    "files_to_change": [
+      ".env.local",
+      ".env.production.local"
+    ],
+    "dependencies": ["TASK-POPULATE-CMS"],
+    "risk": "low",
+    "est_time_h": 0.5
+  },
+  {
+    "id": "TASK-IMPLEMENT-CHECKOUT-PRODUCT-DATA",
+    "title": "Implement dynamic product data in checkout",
+    "priority": "P2",
+    "type": "bug",
+    "area": "api",
+    "description": "Replace hardcoded prices with dynamic product data fetching",
+    "acceptance": [
+      "Checkout uses real product prices",
+      "Product names dynamically loaded",
+      "No more TODO comments in checkout"
+    ],
+    "files_to_change": [
+      "app/api/checkout/route.ts",
+      "src/services/productService.ts"
+    ],
+    "dependencies": ["TASK-POPULATE-CMS"],
+    "risk": "low",
+    "est_time_h": 1
+  },
+  {
+    "id": "TASK-IMPLEMENT-STRIPE-WEBHOOK-LOGIC",
+    "title": "Implement Stripe-specific webhook processing",
+    "priority": "P2",
+    "type": "feature",
+    "area": "api",
+    "description": "Add specific Stripe webhook event handling logic",
+    "acceptance": [
+      "Stripe webhooks processed correctly",
+      "Payment events handled properly",
+      "Order status updates work"
+    ],
+    "files_to_change": [
+      "app/api/webhooks/[source]/route.ts"
+    ],
+    "dependencies": [],
+    "risk": "medium",
+    "est_time_h": 2
+  },
+  {
+    "id": "TASK-ADD-ERROR-BOUNDARIES",
+    "title": "Add comprehensive error boundaries",
+    "priority": "P3",
+    "type": "ui",
+    "area": "ui",
+    "description": "Implement error boundaries for better user experience",
+    "acceptance": [
+      "Runtime errors show user-friendly messages",
+      "Error logging implemented",
+      "Graceful degradation works"
+    ],
+    "files_to_change": [
+      "app/error.tsx",
+      "src/components/ErrorBoundary.tsx"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 1
+  },
+  {
+    "id": "TASK-ADD-LOADING-STATES",
+    "title": "Add loading states and skeletons",
+    "priority": "P3",
+    "type": "ui",
+    "area": "ui",
+    "description": "Implement loading indicators and skeleton screens",
+    "acceptance": [
+      "All async operations show loading states",
+      "Skeleton screens prevent layout shift",
+      "User experience improved"
+    ],
+    "files_to_change": [
+      "src/components/LoadingSkeleton.tsx",
+      "src/components/LoadingSpinner.tsx"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 1
+  },
+  {
+    "id": "TASK-IMPLEMENT-PWA",
+    "title": "Add Progressive Web App features",
+    "priority": "P3",
+    "type": "feature",
+    "area": "perf",
+    "description": "Implement service worker and PWA capabilities",
+    "acceptance": [
+      "App installable on mobile",
+      "Offline functionality works",
+      "Push notifications ready"
+    ],
+    "files_to_change": [
+      "public/manifest.json",
+      "public/sw.js",
+      "next.config.js (PWA config)"
+    ],
+    "dependencies": [],
+    "risk": "medium",
+    "est_time_h": 3
+  },
+  {
+    "id": "TASK-ADD-ANALYTICS",
+    "title": "Implement analytics and tracking",
+    "priority": "P3",
+    "type": "feature",
+    "area": "perf",
+    "description": "Add Google Analytics and user behavior tracking",
+    "acceptance": [
+      "Page views tracked",
+      "User journeys monitored",
+      "Conversion events captured"
+    ],
+    "files_to_change": [
+      "src/lib/analytics.ts",
+      "app/layout.tsx (GA script)"
+    ],
+    "dependencies": [],
+    "risk": "low",
+    "est_time_h": 1
+  }
+]
