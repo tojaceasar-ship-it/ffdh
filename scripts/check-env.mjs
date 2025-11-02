@@ -45,14 +45,14 @@ const requiredVars = {
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
     'OPENAI_API_KEY',
-    'NEXTAUTH_SECRET',
-    'NEXTAUTH_URL',
   ],
   optional: [
     'SANITY_AUTH_TOKEN',
     'PRINTFUL_API_KEY',
     'SENTRY_DSN',
     'VITE_PLAUSIBLE_DOMAIN',
+    'NEXTAUTH_SECRET',
+    'NEXTAUTH_URL',
     'ENABLE_SIGNATURE_CHECK',
   ],
 }
