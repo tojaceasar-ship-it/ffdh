@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
 /**
  * Middleware for FFDH
  * Handles:
- * - Route protection
+ * - Route protection (NextAuth compatible)
  * - Request logging
  * - CORS headers
  * - Security headers
@@ -13,9 +14,9 @@ import { NextRequest, NextResponse } from 'next/server'
 const protectedRoutes = ['/profile', '/orders', '/wishlist', '/admin']
 
 // Routes that should redirect if already authenticated
-const authRoutes = ['/login', '/signup']
+const authRoutes = ['/auth/login', '/auth/register']
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Check if route is protected
@@ -26,19 +27,19 @@ export function middleware(request: NextRequest) {
   // Check if route is auth route
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route))
 
-  // Get auth token from cookies
-  const authToken = request.cookies.get('auth_token')?.value
+  // Get NextAuth session token
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
 
   // Log request
   console.log(`[${new Date().toISOString()}] ${request.method} ${pathname}`)
 
   // Redirect to login if accessing protected route without auth
-  if (isProtectedRoute && !authToken) {
-    return NextResponse.redirect(new URL('/login?redirect=' + pathname, request.url))
+  if (isProtectedRoute && !token) {
+    return NextResponse.redirect(new URL('/auth/login?redirect=' + pathname, request.url))
   }
 
   // Redirect to home if accessing auth route with auth
-  if (isAuthRoute && authToken) {
+  if (isAuthRoute && token) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 

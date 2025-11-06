@@ -1,16 +1,7 @@
 import autoScenes from '../../content/auto_scenes.json'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { EmotionKey, emotionThemes, isEmotionKey } from '@/config/emotions'
-
-const PLACEHOLDER_SUPABASE_URL = 'https://placeholder.supabase.co'
-const PLACEHOLDER_SUPABASE_KEY = 'placeholder-key'
-
-const isSupabaseConfigured = Boolean(
-  process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_URL !== PLACEHOLDER_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY !== PLACEHOLDER_SUPABASE_KEY
-)
+import { normalizeValue, normalizeArray, normalizeNumber, normalizeBoolean } from '@/utils/normalize'
 
 type AutoScene = (typeof autoScenes)[number]
 
@@ -122,20 +113,20 @@ const normaliseScene = (scene: Partial<EmotionScene> & { slug?: string | null; t
   const slug = scene.slug
   if (!slug) return null
 
-  const emotionTags = scene.emotionTags ?? []
+  const emotionTags = normalizeArray(scene.emotionTags)
   const dominantEmotion = deriveDominantEmotion(emotionTags)
 
   return {
     slug,
-    title: scene.title ?? 'Untitled Scene',
-    description: scene.description ?? '',
-    narrative: scene.narrative ?? '',
+    title: normalizeValue(scene.title, 'Untitled Scene'),
+    description: normalizeValue(scene.description, ''),
+    narrative: normalizeValue(scene.narrative, ''),
     imageUrl: scene.imageUrl,
     emotionTags,
     dominantEmotion,
-    commentCount: scene.commentCount ?? 0,
-    viewCount: scene.viewCount ?? 0,
-    source: scene.source ?? 'auto',
+    commentCount: normalizeNumber(scene.commentCount, 0),
+    viewCount: normalizeNumber(scene.viewCount, 0),
+    source: normalizeValue(scene.source, 'auto'),
     reactionSummary: { ...DEFAULT_REACTIONS, ...(scene.reactionSummary ?? {}) },
     createdAt: scene.createdAt,
     updatedAt: scene.updatedAt,
@@ -270,11 +261,28 @@ export interface GenerateScenePayload {
 
 export async function requestGeneratedScene(payload: GenerateScenePayload): Promise<EmotionScene | null> {
   try {
-    const response = await fetch('/api/rewir/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
+    // Add timeout for fetch request
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
+    let response: Response
+    try {
+      response = await fetch('/api/rewir/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      })
+      clearTimeout(timeoutId)
+    } catch (networkError) {
+      clearTimeout(timeoutId)
+      if (networkError instanceof Error && networkError.name === 'AbortError') {
+        console.error('Request timeout: Scene generation did not respond in time')
+        return null
+      }
+      console.error('Network error requesting generated scene:', networkError)
+      return null
+    }
 
     if (!response.ok) {
       console.warn('Failed to generate scene', await response.text())

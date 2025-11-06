@@ -1,0 +1,62 @@
+{
+  "schemas": [
+    {
+      "name": "Navigation Menu",
+      "fields": [
+        "Category",
+        "Items"
+      ]
+    },
+    {
+      "name": "Homepage Content",
+      "fields": [
+        "Title",
+        "Description",
+        "Hero Slides"
+      ]
+    },
+    {
+      "name": "Character Profile",
+      "fields": [
+        "Name",
+        "Emoji",
+        "Description",
+        "Image",
+        "Slogan",
+        "Status"
+      ]
+    },
+    {
+      "name": "Shop Products",
+      "fields": [
+        "Name",
+        "Description",
+        "Price",
+        "Images",
+        "Category",
+        "Variants",
+        "Printful ID"
+      ]
+    },
+    {
+      "name": "Lookbook Entries",
+      "fields": [
+        "Title",
+        "Description",
+        "Images",
+        "Video URL",
+        "Tags",
+        "Publish Date"
+      ]
+    },
+    {
+      "name": "Manifest Content",
+      "fields": [
+        "Title",
+        "Content",
+        "Images"
+      ]
+    }
+  ],
+  "source": "src/lib/sanity-schemas.md"
+}

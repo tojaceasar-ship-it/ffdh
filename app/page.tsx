@@ -1,12 +1,12 @@
 import { Metadata } from 'next'
-import { charactersService } from '../src/services/charactersService'
-import Navbar from '../src/components/Navbar'
-import HeroSection from '../src/components/homepage/HeroSection'
-import CharacterSpotlight from '../src/components/homepage/CharacterSpotlight'
-import CommunityShowcase from '../src/components/homepage/CommunityShowcase'
-import LookbookPreview from '../src/components/homepage/LookbookPreview'
-import InteractiveQuiz from '../src/components/homepage/InteractiveQuiz'
-import SocialProofMetrics from '../src/components/homepage/SocialProofMetrics'
+import { charactersService } from '@/services/charactersService'
+import Navbar from '@/components/Navbar'
+import HeroSection from '@/components/homepage/HeroSection'
+import CharacterSpotlight from '@/components/homepage/CharacterSpotlight'
+import CommunityShowcase from '@/components/homepage/CommunityShowcase'
+import LookbookPreview from '@/components/homepage/LookbookPreview'
+import InteractiveQuiz from '@/components/homepage/InteractiveQuiz'
+import SocialProofMetrics from '@/components/homepage/SocialProofMetrics'
 
 export const metadata: Metadata = {
   title: 'Fruits From Da Hood | Premium Streetwear',
@@ -27,6 +27,9 @@ async function getCharacters() {
     return []
   }
 }
+
+// Enable ISR with 60 second revalidation
+export const revalidate = 60;
 
 export default async function HomePage() {
   const characters = await getCharacters()

@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { moderateContent, analyzeEmotion } from '@/services/aiService'
 import { z } from 'zod'
 import { feedbackLogger } from '@/services/feedbackLogger'
+import { createApiResponse, createApiError, createValidationError, createNotFoundError } from '@/utils/api-response'
 
 const commentRequestSchema = z.object({
   scene_id: z.string().optional(), // Can be UUID or slug
@@ -40,10 +41,7 @@ export async function GET(request: NextRequest) {
 
     if (!sceneId) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'scene_id or scene_slug is required',
-        },
+        createApiError('scene_id or scene_slug is required', 'MISSING_PARAMETER'),
         { status: 400 }
       )
     }
@@ -58,25 +56,16 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('Error fetching comments:', error)
       return NextResponse.json(
-        {
-          success: false,
-          message: 'Failed to fetch comments',
-        },
+        createApiError('Failed to fetch comments', 'FETCH_ERROR'),
         { status: 500 }
       )
     }
 
-    return NextResponse.json({
-      success: true,
-      comments: data || [],
-    })
+    return NextResponse.json(createApiResponse(data || [], 'Comments fetched successfully'))
   } catch (error) {
     console.error('Error in GET /api/comments:', error)
     return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-      },
+      createApiError('Internal server error', 'INTERNAL_ERROR'),
       { status: 500 }
     )
   }
@@ -104,23 +93,14 @@ export async function POST(request: NextRequest) {
         .single()
       
       if (!sceneData) {
-        return NextResponse.json(
-          {
-            success: false,
-            message: 'Scene not found',
-          },
-          { status: 404 }
-        )
+        return NextResponse.json(createNotFoundError('Scene'), { status: 404 })
       }
       resolvedSceneId = sceneData.id
     }
 
     if (!resolvedSceneId) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'scene_id or sceneSlug is required',
-        },
+        createApiError('scene_id or sceneSlug is required', 'MISSING_PARAMETER'),
         { status: 400 }
       )
     }
@@ -143,11 +123,7 @@ export async function POST(request: NextRequest) {
       )
 
       return NextResponse.json(
-        {
-          success: false,
-          message: 'Comment contains inappropriate content',
-          moderated: true,
-        },
+        createApiError('Comment contains inappropriate content', 'CONTENT_MODERATION', { moderated: true }),
         { status: 400 }
       )
     }
@@ -180,10 +156,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating comment:', error)
       return NextResponse.json(
-        {
-          success: false,
-          message: 'Failed to create comment',
-        },
+        createApiError('Failed to create comment', 'CREATE_ERROR'),
         { status: 500 }
       )
     }
@@ -209,23 +182,14 @@ export async function POST(request: NextRequest) {
       'Comment created successfully'
     )
 
-    return NextResponse.json({
-      success: true,
-      comment: data,
-      emotion: detectedEmotion,
-    })
+    return NextResponse.json(
+      createApiResponse({ comment: data, emotion: detectedEmotion }, 'Comment created successfully')
+    )
   } catch (error) {
     const responseTime = Date.now() - startTime
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid request body',
-          errors: error.errors,
-        },
-        { status: 400 }
-      )
+      return NextResponse.json(createValidationError(error.errors), { status: 400 })
     }
 
     console.error('Error in POST /api/comments:', error)
@@ -241,10 +205,7 @@ export async function POST(request: NextRequest) {
     )
 
     return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-      },
+      createApiError('Internal server error', 'INTERNAL_ERROR'),
       { status: 500 }
     )
   }

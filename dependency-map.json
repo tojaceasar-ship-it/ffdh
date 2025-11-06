@@ -1,0 +1,359 @@
+{
+  "metadata": {
+    "generated": "2025-01-XX",
+    "project": "FFDH Next.js",
+    "version": "1.0"
+  },
+  "entryPoints": {
+    "app/layout.tsx": {
+      "type": "root-layout",
+      "dependencies": [
+        "components/Providers",
+        "components/ScrollToTop",
+        "components/Footer",
+        "components/EmotiWrapper",
+        "styles/globals.css"
+      ],
+      "critical": true,
+      "impact": "ALL_PAGES"
+    },
+    "app/page.tsx": {
+      "type": "homepage",
+      "dependencies": [
+        "services/charactersService",
+        "components/Navbar",
+        "components/homepage/HeroSection",
+        "components/homepage/CharacterSpotlight",
+        "components/homepage/CommunityShowcase",
+        "components/homepage/LookbookPreview",
+        "components/homepage/InteractiveQuiz",
+        "components/homepage/SocialProofMetrics"
+      ],
+      "critical": true,
+      "impact": "HOME_PAGE"
+    },
+    "app/rewir/page.tsx": {
+      "type": "rewir-main",
+      "dependencies": [
+        "services/rewirService",
+        "components/EmotionFilter",
+        "components/SceneCard",
+        "components/SceneMap",
+        "components/SceneModal",
+        "components/EmotionDetector",
+        "hooks/useEmotionProfile"
+      ],
+      "critical": true,
+      "impact": "REWIR_SYSTEM"
+    },
+    "app/rewir/[slug]/page.tsx": {
+      "type": "rewir-scene",
+      "dependencies": [
+        "services/rewirService",
+        "components/AIReplyBox",
+        "components/CommentsFeed",
+        "hooks/useEmotionProfile",
+        "config/emotions"
+      ],
+      "critical": true,
+      "impact": "REWIR_SCENES"
+    }
+  },
+  "apiRoutes": {
+    "app/api/auth/[...nextauth]/route.ts": {
+      "dependencies": ["lib/auth"],
+      "external": ["next-auth", "supabase"],
+      "critical": true
+    },
+    "app/api/checkout/route.ts": {
+      "dependencies": ["lib/validation", "services/productService"],
+      "external": ["stripe"],
+      "critical": true
+    },
+    "app/api/printful/route.ts": {
+      "dependencies": [],
+      "external": ["printful-api"],
+      "env": ["PRINTFUL_API_KEY"],
+      "critical": true
+    },
+    "app/api/rewir/generate/route.ts": {
+      "dependencies": [
+        "services/aiService",
+        "services/rewirService",
+        "config/emotions"
+      ],
+      "external": ["openai"],
+      "env": ["OPENAI_API_KEY"],
+      "critical": true
+    },
+    "app/api/ai/emotion/route.ts": {
+      "dependencies": ["services/aiService", "config/moodVariants"],
+      "external": ["openai"],
+      "env": ["OPENAI_API_KEY"],
+      "critical": false
+    },
+    "app/api/ai-reply/route.ts": {
+      "dependencies": ["services/aiService", "services/feedbackLogger"],
+      "external": ["openai"],
+      "env": ["OPENAI_API_KEY"],
+      "critical": false
+    },
+    "app/api/comments/route.ts": {
+      "dependencies": [
+        "lib/supabase",
+        "services/aiService",
+        "services/feedbackLogger"
+      ],
+      "external": ["supabase", "openai"],
+      "critical": false
+    },
+    "app/api/scenes/index/route.ts": {
+      "dependencies": ["services/sceneIndexer"],
+      "external": ["sanity", "supabase"],
+      "critical": false
+    },
+    "app/api/webhooks/[source]/route.ts": {
+      "dependencies": [],
+      "external": ["stripe", "github"],
+      "env": ["STRIPE_WEBHOOK_SECRET", "GITHUB_WEBHOOK_SECRET"],
+      "critical": true
+    },
+    "app/api/stripe/webhook/route.ts": {
+      "dependencies": ["app/api/webhooks/[source]/route"],
+      "status": "deprecated",
+      "critical": false
+    }
+  },
+  "services": {
+    "charactersService.ts": {
+      "dependsOn": ["lib/sanity"],
+      "usedBy": [
+        "app/page.tsx",
+        "app/characters/page.tsx"
+      ],
+      "external": ["sanity"],
+      "env": ["NEXT_PUBLIC_SANITY_PROJECT_ID"],
+      "tests": false
+    },
+    "rewirService.ts": {
+      "dependsOn": ["lib/supabase", "config/emotions"],
+      "usedBy": [
+        "app/rewir/page.tsx",
+        "app/rewir/[slug]/page.tsx",
+        "app/api/rewir/generate/route.ts"
+      ],
+      "external": ["supabase"],
+      "env": [
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      ],
+      "tests": false
+    },
+    "productService.ts": {
+      "dependsOn": ["lib/supabase"],
+      "usedBy": [
+        "app/shop/page.tsx",
+        "app/product/[slug]/page.tsx",
+        "app/api/checkout/route.ts"
+      ],
+      "external": ["supabase"],
+      "env": [
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      ],
+      "tests": false
+    },
+    "aiService.ts": {
+      "dependsOn": ["services/promptContext"],
+      "usedBy": [
+        "app/api/ai/emotion/route.ts",
+        "app/api/ai-reply/route.ts",
+        "app/api/comments/route.ts",
+        "app/api/rewir/generate/route.ts",
+        "components/AIReplyBox.tsx"
+      ],
+      "external": ["openai"],
+      "env": ["OPENAI_API_KEY"],
+      "tests": false
+    },
+    "sceneIndexer.ts": {
+      "dependsOn": ["lib/sanity", "lib/supabase", "services/aiService"],
+      "usedBy": ["app/api/scenes/index/route.ts"],
+      "external": ["sanity", "supabase", "openai"],
+      "tests": true
+    },
+    "printfulService.ts": {
+      "dependsOn": [],
+      "usedBy": ["services/paymentService.ts"],
+      "external": ["printful-api"],
+      "env": ["PRINTFUL_API_KEY"],
+      "tests": false
+    },
+    "paymentService.ts": {
+      "dependsOn": ["services/printfulService"],
+      "usedBy": [],
+      "external": ["stripe", "paypal", "printful"],
+      "env": [
+        "STRIPE_SECRET_KEY",
+        "VITE_PAYPAL_CLIENT_ID",
+        "VITE_PAYPAL_SECRET"
+      ],
+      "envIssues": ["VITE_* should be NEXT_PUBLIC_*"],
+      "tests": false
+    },
+    "promptContext.ts": {
+      "dependsOn": ["lib/supabase"],
+      "usedBy": ["services/aiService.ts"],
+      "external": ["supabase"],
+      "tests": true
+    },
+    "feedbackLogger.ts": {
+      "dependsOn": ["lib/supabase"],
+      "usedBy": [
+        "app/api/comments/route.ts",
+        "app/api/ai-reply/route.ts"
+      ],
+      "external": ["supabase"],
+      "tests": false
+    }
+  },
+  "components": {
+    "Providers.tsx": {
+      "dependsOn": [
+        "store/index",
+        "contexts/MoodContext",
+        "next-auth/react"
+      ],
+      "usedBy": ["app/layout.tsx"],
+      "critical": true
+    },
+    "Navbar.tsx": {
+      "dependsOn": ["store"],
+      "usedBy": ["app/page.tsx"],
+      "critical": false
+    },
+    "SceneCard.tsx": {
+      "dependsOn": ["config/emotions", "services/rewirService"],
+      "usedBy": ["app/rewir/page.tsx"],
+      "critical": false
+    },
+    "SceneModal.tsx": {
+      "dependsOn": [
+        "config/emotions",
+        "services/rewirService",
+        "contexts/MoodContext"
+      ],
+      "usedBy": ["app/rewir/page.tsx"],
+      "critical": false
+    },
+    "ProductCard.tsx": {
+      "dependsOn": ["store"],
+      "usedBy": ["app/shop/page.tsx", "components/DropGrid.tsx"],
+      "critical": false
+    }
+  },
+  "externalDependencies": {
+    "supabase": {
+      "usedBy": [
+        "lib/supabase.ts",
+        "lib/auth.ts",
+        "services/rewirService.ts",
+        "services/productService.ts",
+        "services/sceneIndexer.ts",
+        "services/promptContext.ts",
+        "services/feedbackLogger.ts",
+        "app/api/comments/route.ts",
+        "components/CommentsFeed.tsx"
+      ],
+      "critical": true
+    },
+    "sanity": {
+      "usedBy": [
+        "lib/sanity.ts",
+        "services/charactersService.ts",
+        "services/sceneIndexer.ts",
+        "app/manifest/page.tsx"
+      ],
+      "critical": true
+    },
+    "stripe": {
+      "usedBy": [
+        "app/api/checkout/route.ts",
+        "services/paymentService.ts"
+      ],
+      "critical": true
+    },
+    "openai": {
+      "usedBy": ["services/aiService.ts"],
+      "critical": false
+    },
+    "next-auth": {
+      "usedBy": ["lib/auth.ts", "app/api/auth/[...nextauth]/route.ts"],
+      "critical": false
+    }
+  },
+  "deadFiles": [
+    "src/App.jsx",
+    "src/routes.test.jsx"
+  ],
+  "unusedDependencies": [
+    "react-router-dom"
+  ],
+  "circularDependencies": [],
+  "envVariables": {
+    "required": [
+      "NEXT_PUBLIC_SANITY_PROJECT_ID",
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    ],
+    "optional": [
+      "STRIPE_SECRET_KEY",
+      "PRINTFUL_API_KEY",
+      "OPENAI_API_KEY",
+      "SANITY_AUTH_TOKEN",
+      "STRIPE_WEBHOOK_SECRET",
+      "GITHUB_WEBHOOK_SECRET",
+      "NEXT_PUBLIC_APP_URL",
+      "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
+    ],
+    "incorrect": [
+      {
+        "variable": "VITE_PAYPAL_CLIENT_ID",
+        "shouldBe": "NEXT_PUBLIC_PAYPAL_CLIENT_ID",
+        "usedIn": [
+          "src/services/paymentService.ts",
+          "src/config/env.ts"
+        ]
+      },
+      {
+        "variable": "VITE_PAYPAL_SECRET",
+        "shouldBe": "PAYPAL_SECRET",
+        "usedIn": [
+          "src/services/paymentService.ts",
+          "src/config/env.ts"
+        ]
+      },
+      {
+        "variable": "VITE_PRINTFUL_STORE_ID",
+        "shouldBe": "PRINTFUL_STORE_ID",
+        "usedIn": ["src/config/env.ts"]
+      },
+      {
+        "variable": "VITE_GOOGLE_ANALYTICS_ID",
+        "shouldBe": "NEXT_PUBLIC_GOOGLE_ANALYTICS_ID",
+        "usedIn": ["src/config/env.ts"]
+      },
+      {
+        "variable": "VITE_GA4_MEASUREMENT_ID",
+        "shouldBe": "NEXT_PUBLIC_GA4_MEASUREMENT_ID",
+        "usedIn": ["src/config/env.ts"]
+      },
+      {
+        "variable": "VITE_PLAUSIBLE_DOMAIN",
+        "shouldBe": "NEXT_PUBLIC_PLAUSIBLE_DOMAIN",
+        "usedIn": ["src/config/env.ts"]
+      }
+    ]
+  }
+}
+

@@ -1,0 +1,45 @@
+{
+  "name": "FFDH + Rewir 2.0",
+  "description": "Premium Next.js portal for FFDH × Rewir collaboration",
+  "concept": "AI-generated street narratives with commerce flow",
+  "brand": {
+    "name": "Fruits From Da Hood",
+    "tagline": "Glow bright",
+    "mission": "Blending AI-generated street narratives with premium streetwear",
+    "targetAudience": "Streetwear enthusiasts, AI art lovers, urban culture"
+  },
+  "architecture": {
+    "framework": "Next.js 15",
+    "routing": "App Router",
+    "stateManagement": ["Redux Toolkit", "Zustand", "React Query"],
+    "styling": "Tailwind CSS",
+    "cms": "Sanity CMS",
+    "database": "Supabase",
+    "payments": "Stripe",
+    "fulfillment": "Printful",
+    "ai": "OpenAI GPT-4"
+  },
+  "routes": {
+    "home": "/",
+    "shop": "/shop",
+    "rewir": "/rewir",
+    "characters": "/characters",
+    "lookbook": "/lookbook",
+    "manifest": "/manifest",
+    "about": "/about",
+    "contact": "/contact",
+    "terms": "/terms",
+    "privacy": "/privacy"
+  },
+  "status": {
+    "completion": 85,
+    "criticalGaps": [
+      "Lookbook page missing",
+      "Manifest page missing",
+      "Printful proxy missing",
+      "Auth system incomplete",
+      "CMS content not populated"
+    ]
+  }
+}
+

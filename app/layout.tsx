@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import { Orbitron, Inter, Rajdhani, Bungee } from 'next/font/google'
-import Providers from '../src/components/Providers'
-import ScrollToTop from '../src/components/ScrollToTop'
-import Footer from '../src/components/Footer'
-import EmotiWrapper from '../src/components/EmotiWrapper'
-import '../src/styles/globals.css'
+import Providers from '@/components/Providers'
+import ScrollToTop from '@/components/ScrollToTop'
+import Footer from '@/components/Footer'
+import EmotiWrapper from '@/components/EmotiWrapper'
+import '@/styles/globals.css'
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -80,7 +80,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${orbitron.variable} ${inter.variable} ${rajdhani.variable} ${bungee.variable}`}>
-      <title>Fruits From Da Hood | Premium Streetwear & Emotional AI</title>
       <body className="font-inter antialiased flex flex-col min-h-screen">
         <Providers>
           <ScrollToTop />

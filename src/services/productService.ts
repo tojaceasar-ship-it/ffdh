@@ -1,15 +1,6 @@
 import autoProducts from '../../content/auto_products.json'
-import { supabase } from '@/lib/supabase'
-
-const PLACEHOLDER_SUPABASE_URL = 'https://placeholder.supabase.co'
-const PLACEHOLDER_SUPABASE_KEY = 'placeholder-key'
-
-const isSupabaseConfigured = Boolean(
-  process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_URL !== PLACEHOLDER_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY !== PLACEHOLDER_SUPABASE_KEY
-)
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { normalizeValue, normalizeArray, normalizeNumber, normalizeBoolean } from '@/utils/normalize'
 
 type AutoProduct = (typeof autoProducts)[number]
 
@@ -31,17 +22,17 @@ const normaliseProduct = (product: Partial<ProductSummary> & { slug?: string | n
   if (!product.slug || !product.name) return null
 
   return {
-    id: product.id ?? product.slug,
+    id: normalizeValue(product.id, product.slug),
     slug: product.slug,
     name: product.name,
-    description: product.description ?? 'Limited drop from Fruits From Da Hood.',
-    priceEUR: Number(product.priceEUR ?? 0),
-    imageUrl: product.imageUrl ?? '/meta/scene-joy.svg',
-    isLimited: Boolean(product.isLimited ?? false),
+    description: normalizeValue(product.description, 'Limited drop from Fruits From Da Hood.'),
+    priceEUR: normalizeNumber(product.priceEUR, 0),
+    imageUrl: normalizeValue(product.imageUrl, '/meta/scene-joy.svg'),
+    isLimited: normalizeBoolean(product.isLimited, false),
     stock: product.stock,
     printfulVariantId: product.printfulVariantId,
-    tags: product.tags ?? [],
-    status: product.status ?? 'active',
+    tags: normalizeArray(product.tags),
+    status: normalizeValue(product.status, 'active'),
   }
 }
 

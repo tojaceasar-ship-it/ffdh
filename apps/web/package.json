@@ -1,0 +1,16 @@
+{
+  "name": "@ffdh/web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "qa:smoke": "node tools/smoke.js",
+    "qa:lh": "node tools/lighthouse.mjs"
+  }
+}
+

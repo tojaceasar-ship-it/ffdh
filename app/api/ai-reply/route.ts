@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateAIResponse } from '@/services/aiService'
 import { z } from 'zod'
 import { feedbackLogger } from '@/services/feedbackLogger'
+import { createApiResponse, createApiError, createValidationError } from '@/utils/api-response'
 
 const aiReplyRequestSchema = z.object({
   comment: z.string().min(2).max(500),
@@ -46,13 +47,17 @@ export async function POST(request: NextRequest) {
       `AI response generated in ${responseTime}ms`
     )
 
-    return NextResponse.json({
-      success: true,
-      response: aiResponse,
-      metrics: {
-        responseTime,
-      },
-    })
+    return NextResponse.json(
+      createApiResponse(
+        {
+          response: aiResponse,
+          metrics: {
+            responseTime,
+          },
+        },
+        'AI response generated successfully'
+      )
+    )
   } catch (error) {
     const responseTime = Date.now() - startTime
 
@@ -67,14 +72,7 @@ export async function POST(request: NextRequest) {
         'Validation error in AI reply request'
       )
 
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid request body',
-          errors: error.errors,
-        },
-        { status: 400 }
-      )
+      return NextResponse.json(createValidationError(error.errors), { status: 400 })
     }
 
     console.error('Error generating AI reply:', error)
@@ -90,10 +88,7 @@ export async function POST(request: NextRequest) {
     )
 
     return NextResponse.json(
-      {
-        success: false,
-        message: 'Failed to generate AI response',
-      },
+      createApiError('Failed to generate AI response', 'AI_RESPONSE_ERROR', error instanceof Error ? error.message : undefined),
       { status: 500 }
     )
   }

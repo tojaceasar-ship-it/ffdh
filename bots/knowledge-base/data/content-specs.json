@@ -1,0 +1,61 @@
+{
+  "products": {
+    "minCount": 10,
+    "requiredFields": [
+      "name",
+      "slug",
+      "description",
+      "price_eur",
+      "imageUrl",
+      "is_limited",
+      "stock"
+    ],
+    "descriptionMinWords": 150,
+    "languages": [
+      "pl",
+      "en"
+    ],
+    "imageSpecs": {
+      "main": "1920x1920px",
+      "additional": "min 3 images",
+      "format": "WebP preferred"
+    },
+    "sampleCount": 6
+  },
+  "scenes": {
+    "minCount": 15,
+    "requiredFields": [
+      "slug",
+      "title",
+      "description",
+      "narrative",
+      "emotionTags",
+      "imageUrl"
+    ],
+    "narrativeMinWords": 200,
+    "emotions": [
+      "joy",
+      "sadness",
+      "anger",
+      "peace",
+      "nostalgia",
+      "curiosity",
+      "fear",
+      "love",
+      "chaos",
+      "disgust"
+    ],
+    "sampleCount": 10
+  },
+  "manifest": {
+    "minWords": 800,
+    "sections": [
+      "mission",
+      "history",
+      "values",
+      "socialImpact",
+      "vision",
+      "team"
+    ]
+  }
+}

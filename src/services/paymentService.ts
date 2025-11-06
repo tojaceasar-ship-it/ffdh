@@ -5,8 +5,8 @@ import { printfulService } from './printfulService';
 // Note: Stripe secret key should be used for server-side operations
 // For client-side Stripe.js, use NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const STRIPE_API_KEY = process.env.STRIPE_SECRET_KEY || (typeof window === 'undefined' ? undefined : null);
-const PAYPAL_CLIENT_ID = process.env.VITE_PAYPAL_CLIENT_ID || (typeof window === 'undefined' ? undefined : null);
-const PAYPAL_SECRET = process.env.VITE_PAYPAL_SECRET || (typeof window === 'undefined' ? undefined : null);
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || (typeof window === 'undefined' ? undefined : null);
+const PAYPAL_SECRET = process.env.PAYPAL_SECRET || (typeof window === 'undefined' ? undefined : null);
 
 // Stripe API configuration
 const stripeClient = axios.create({

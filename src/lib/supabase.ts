@@ -3,12 +3,30 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+// Placeholder values to detect if Supabase is configured
+const PLACEHOLDER_SUPABASE_URL = 'https://placeholder.supabase.co'
+const PLACEHOLDER_SUPABASE_KEY = 'placeholder-key'
+
+// Check if Supabase is properly configured (not using placeholders)
+export const isSupabaseConfigured = Boolean(
+  supabaseUrl &&
+    supabaseUrl !== PLACEHOLDER_SUPABASE_URL &&
+    supabaseAnonKey &&
+    supabaseAnonKey !== PLACEHOLDER_SUPABASE_KEY
+)
+
 // Create a dummy client if credentials are missing (for build time)
 const getClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('⚠️ Missing Supabase credentials - using fallback')
-    // Return a mock client that won't crash the app
-    return createClient('https://placeholder.supabase.co', 'placeholder-key')
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        '❌ CRITICAL: Supabase credentials are required in production. ' +
+        'Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.'
+      )
+    }
+    console.warn('⚠️ Missing Supabase credentials - using fallback (development only)')
+    // Return a mock client that won't crash the app (development only)
+    return createClient(PLACEHOLDER_SUPABASE_URL, PLACEHOLDER_SUPABASE_KEY)
   }
   return createClient(supabaseUrl, supabaseAnonKey)
 }

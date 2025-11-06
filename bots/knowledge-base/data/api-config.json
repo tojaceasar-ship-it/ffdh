@@ -1,0 +1,63 @@
+{
+  "services": {
+    "sanity": {
+      "projectId": "${NEXT_PUBLIC_SANITY_PROJECT_ID}",
+      "dataset": "${NEXT_PUBLIC_SANITY_DATASET}",
+      "apiVersion": "2024-01-01",
+      "endpoints": {
+        "studio": "/studio",
+        "api": "https://${PROJECT_ID}.api.sanity.io"
+      }
+    },
+    "supabase": {
+      "url": "${NEXT_PUBLIC_SUPABASE_URL}",
+      "anonKey": "${NEXT_PUBLIC_SUPABASE_ANON_KEY}",
+      "tables": {
+        "scenes": "scenes",
+        "products": "products",
+        "comments": "comments",
+        "reactions": "reactions",
+        "feedback_logs": "feedback_logs"
+      }
+    },
+    "stripe": {
+      "publishableKey": "${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}",
+      "webhookEndpoint": "/api/stripe/webhook"
+    },
+    "printful": {
+      "apiEndpoint": "https://api.printful.com",
+      "webhookEndpoint": "/api/printful/webhook"
+    },
+    "openai": {
+      "model": "gpt-4-turbo-preview",
+      "temperature": 0.9
+    }
+  },
+  "requiredEnvVars": [
+    "NODE_ENV",
+    "production",
+    "NEXT_PUBLIC_APP_URL",
+    "https://ffdh-next.vercel.app",
+    "NEXT_PUBLIC_SANITY_PROJECT_ID",
+    "NEXT_PUBLIC_SANITY_DATASET",
+    "production",
+    "SANITY_AUTH_TOKEN",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "PRINTFUL_API_KEY",
+    "PRINTFUL_WEBHOOK_SECRET",
+    "OPENAI_API_KEY"
+  ],
+  "optionalEnvVars": [
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "SENTRY_AUTH_TOKEN",
+    "ENABLE_SIGNATURE_CHECK",
+    "PLAUSIBLE_DOMAIN",
+    "ffdh-next.vercel.app",
+    "GA4_MEASUREMENT_ID"
+  ]
+}

@@ -5,7 +5,13 @@ const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 // Create fallback client for build time if no project ID
 const getSanityClient = () => {
   if (!projectId) {
-    console.warn('⚠️ Missing Sanity project ID - using fallback')
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        '❌ CRITICAL: Sanity project ID is required in production. ' +
+        'Please set NEXT_PUBLIC_SANITY_PROJECT_ID environment variable.'
+      )
+    }
+    console.warn('⚠️ Missing Sanity project ID - using fallback (development only)')
     return createClient({
       projectId: 'placeholder',
       dataset: 'production',
@@ -24,8 +30,8 @@ const getSanityClient = () => {
 
 export const sanityClient = getSanityClient()
 
-// Alias for backward compatibility with JS files
-export const client = sanityClient
+// Export default for convenience
+export default sanityClient
 
 /**
  * Image builder for Sanity images

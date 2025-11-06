@@ -1,0 +1,118 @@
+{
+  "colors": {
+    "brand": {
+      "primary": "#FFD700",
+      "secondary": "#00CED1",
+      "accent": "#FF4500",
+      "background": "#0a0a0a",
+      "foreground": "#ffffff"
+    },
+    "palette": {
+      "brand": {
+        "50": "oklch(97% .04 260)",
+        "100": "oklch(92% .06 260)",
+        "200": "oklch(86% .08 260)",
+        "300": "oklch(78% .10 260)",
+        "400": "oklch(70% .12 260)",
+        "500": "oklch(60% .12 260)",
+        "600": "oklch(52% .12 260)",
+        "700": "oklch(44% .12 260)",
+        "800": "oklch(36% .10 260)",
+        "900": "oklch(28% .08 260)"
+      },
+      "success": {
+        "600": "oklch(52% .20 142)",
+        "700": "oklch(45% .20 142)"
+      },
+      "warning": {
+        "600": "oklch(65% .15 85)",
+        "700": "oklch(58% .15 85)"
+      },
+      "danger": {
+        "600": "oklch(52% .20 30)",
+        "700": "oklch(45% .20 30)"
+      },
+      "neutral": {
+        "50": "oklch(98% .005 95)",
+        "100": "oklch(95% .01 95)",
+        "200": "oklch(90% .015 95)",
+        "300": "oklch(80% .02 95)",
+        "400": "oklch(70% .025 95)",
+        "500": "oklch(55% .03 95)",
+        "600": "oklch(45% .035 95)",
+        "700": "oklch(35% .04 95)",
+        "800": "oklch(25% .045 95)",
+        "900": "oklch(15% .05 95)"
+      }
+    }
+  },
+  "fonts": {
+    "primary": "Orbitron",
+    "body": "Inter",
+    "heading": "Rajdhani",
+    "accent": "Bungee"
+  },
+  "animations": {
+    "neon-pulse": "pulse 2s infinite",
+    "glitch": "glitch 0.1s infinite",
+    "fade-in": "fadeIn 0.5s ease-in-out",
+    "slide-up": "slideUp 0.3s ease-out",
+    "slide-down": "slideDown 0.3s ease-out"
+  },
+  "emotionalAgents": [
+    {
+      "id": "joy",
+      "name": "Joy",
+      "color": "#FFD700",
+      "symbol": "☀️"
+    },
+    {
+      "id": "fear",
+      "name": "Fear",
+      "color": "#8B5CF6",
+      "symbol": "🜏"
+    },
+    {
+      "id": "anger",
+      "name": "Anger",
+      "color": "#EF4444",
+      "symbol": "⚡"
+    },
+    {
+      "id": "nostalgia",
+      "name": "Nostalgia",
+      "color": "#60A5FA",
+      "symbol": "⌛"
+    },
+    {
+      "id": "curiosity",
+      "name": "Curiosity",
+      "color": "#22D3EE",
+      "symbol": "❔"
+    },
+    {
+      "id": "peace",
+      "name": "Peace",
+      "color": "#10B981",
+      "symbol": "🕊️"
+    },
+    {
+      "id": "love",
+      "name": "Love",
+      "color": "#F472B6",
+      "symbol": "❤"
+    },
+    {
+      "id": "chaos",
+      "name": "Chaos",
+      "color": "#F59E0B",
+      "symbol": "∞"
+    },
+    {
+      "id": "disgust",
+      "name": "Disgust",
+      "color": "#84CC16",
+      "symbol": "✖"
+    }
+  ]
+}

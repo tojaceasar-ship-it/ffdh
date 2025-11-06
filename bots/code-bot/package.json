@@ -1,0 +1,19 @@
+{
+  "name": "@ffdh/code-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@ffdh/shared": "workspace:*",
+    "zod": "^3.22.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.1",
+    "@types/node": "^20.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "typescript": "^5.3.0"
+  }
+}
+

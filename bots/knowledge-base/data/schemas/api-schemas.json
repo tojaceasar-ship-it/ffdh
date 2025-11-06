@@ -1,0 +1,65 @@
+{
+  "routes": [
+    {
+      "path": "/api/rewir/generate",
+      "method": "POST",
+      "description": "Generate Rewir scene"
+    },
+    {
+      "path": "/api/scenes/index",
+      "method": "GET",
+      "description": "List scenes"
+    },
+    {
+      "path": "/api/scenes/index",
+      "method": "POST",
+      "description": "Sync scenes"
+    },
+    {
+      "path": "/api/ai-reply",
+      "method": "POST",
+      "description": "Generate AI reply"
+    },
+    {
+      "path": "/api/ai/emotion",
+      "method": "POST",
+      "description": "Analyze emotion"
+    },
+    {
+      "path": "/api/comments",
+      "method": "GET",
+      "description": "Get comments"
+    },
+    {
+      "path": "/api/comments",
+      "method": "POST",
+      "description": "Create comment"
+    },
+    {
+      "path": "/api/checkout",
+      "method": "POST",
+      "description": "Create checkout session"
+    },
+    {
+      "path": "/api/stripe/webhook",
+      "method": "POST",
+      "description": "Stripe webhook"
+    },
+    {
+      "path": "/api/printful/webhook",
+      "method": "POST",
+      "description": "Printful webhook"
+    },
+    {
+      "path": "/api/webhooks/[source]",
+      "method": "POST",
+      "description": "Universal webhook handler"
+    },
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "description": "Health check"
+    }
+  ],
+  "baseUrl": "${NEXT_PUBLIC_APP_URL}"
+}

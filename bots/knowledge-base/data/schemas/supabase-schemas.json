@@ -1,0 +1,11 @@
+{
+  "tables": [
+    "public"
+  ],
+  "migrations": [
+    "001_initial_schema.sql",
+    "002_scenes_schema_rewir.sql",
+    "003_feedback_logs.sql",
+    "004_scene_reactions_feedback.sql"
+  ]
+}

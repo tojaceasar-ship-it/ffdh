@@ -32,29 +32,44 @@ export async function analyzeEmotion(text: string): Promise<EmotionAnalysisResul
       }
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: OPENAI_MODEL,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are an emotion analyzer. Respond in JSON format with { emotion: string, confidence: number 0-1, sentiment: positive|negative|neutral }',
-          },
-          {
-            role: 'user',
-            content: `Analyze the emotion in this text: "${text}"`,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 100,
-      }),
-    })
+    // Add timeout for fetch request
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
+    let response: Response
+    try {
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: OPENAI_MODEL,
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are an emotion analyzer. Respond in JSON format with { emotion: string, confidence: number 0-1, sentiment: positive|negative|neutral }',
+            },
+            {
+              role: 'user',
+              content: `Analyze the emotion in this text: "${text}"`,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 100,
+        }),
+        signal: controller.signal,
+      })
+      clearTimeout(timeoutId)
+    } catch (networkError) {
+      clearTimeout(timeoutId)
+      if (networkError instanceof Error && networkError.name === 'AbortError') {
+        throw new Error('Request timeout: OpenAI API did not respond in time')
+      }
+      throw networkError
+    }
 
     if (!response.ok) {
       throw new Error(`OpenAI API error: ${response.statusText}`)
@@ -112,6 +127,7 @@ export async function generateAIResponse(
     
     let userPrompt = `Scene: "${sceneTitle}"\nUser comment: "${userComment}"\nUser emotion: ${emotion || 'not specified'}`
 
+    // Use static import for promptContext (better tree-shaking, no race conditions)
     if (sceneSlug) {
       try {
         const { buildPromptContext, buildEnhancedPrompt, buildSystemPrompt, detectLanguage } = await import('./promptContext')

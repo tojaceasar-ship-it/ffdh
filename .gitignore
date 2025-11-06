@@ -1,63 +1,53 @@
 # Dependencies
-node_modules
+node_modules/
 .pnp
 .pnp.js
 
 # Testing
-coverage
+coverage/
 .nyc_output
+test-results/
+playwright-report/
 
 # Next.js
-.next
-out
-build
-dist
+.next/
+out/
+build/
+dist/
 
 # Production
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+*.log
+*.log.*
 
 # Misc
 .DS_Store
-*.log
 *.pem
+.vscode/
+.idea/
+*.swp
+*.swo
 
 # Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Local env files
 .env*.local
-scripts/create-env-files.ps1
-
-# Secrets directory
-.secrets/
+.env.ci
 
 # Vercel
 .vercel
-.env.vercel
 
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
+# Turbo
+.turbo/
 
-# IDE
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.idea
+# FFDH Bot Army
+.ffdh/
+bots/knowledge-base/secrets/*.json
+!bots/knowledge-base/secrets/*.example.json
 
-# OS
-Thumbs.db
-.DS_Store
-
-# Sentry
-.sentryclirc
-
-# Build artifacts
-tsconfig.tsbuildinfo
+# Reports
+.reports/

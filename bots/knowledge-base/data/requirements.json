@@ -1,0 +1,109 @@
+{
+  "definitionOfDone": {
+    "criticalPaths": {
+      "lookbook": {
+        "status": "missing",
+        "priority": "P1"
+      },
+      "manifest": {
+        "status": "missing",
+        "priority": "P1"
+      },
+      "printfulProxy": {
+        "status": "missing",
+        "priority": "P1"
+      }
+    },
+    "functionalRequirements": {
+      "auth": {
+        "status": "missing",
+        "priority": "P2"
+      },
+      "cmsContent": {
+        "status": "missing",
+        "priority": "P1"
+      }
+    },
+    "qualityGates": {
+      "lighthouse": {
+        "target": 95,
+        "current": "unknown"
+      },
+      "testCoverage": {
+        "target": 70,
+        "current": 86.4
+      },
+      "bundleSize": {
+        "target": 500,
+        "unit": "KB"
+      },
+      "buildTime": {
+        "target": 60,
+        "current": 14.4,
+        "unit": "seconds"
+      }
+    }
+  },
+  "tasks": [
+    {
+      "id": "TASK-POPULATE-CMS",
+      "estimatedTime": 2,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-ENABLE-WEBHOOK-VERIFICATION",
+      "estimatedTime": 0.5,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-CONFIGURE-PRINTFUL",
+      "estimatedTime": 0.5,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-IMPLEMENT-CHECKOUT-PRODUCT-DATA",
+      "estimatedTime": 1,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-IMPLEMENT-STRIPE-WEBHOOK-LOGIC",
+      "estimatedTime": 2,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-GENERATE-SITEMAP",
+      "estimatedTime": 1,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-PERFORMANCE-AUDIT",
+      "estimatedTime": 2,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-IMPLEMENT-AUTH",
+      "estimatedTime": 4,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-ENABLE-WEBHOOK-VERIFICATION",
+      "estimatedTime": 0.5,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-GENERATE-SITEMAP",
+      "estimatedTime": 1,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-CONFIGURE-PRINTFUL",
+      "estimatedTime": 0.5,
+      "priority": "P2"
+    },
+    {
+      "id": "TASK-IMPLEMENT-CHECKOUT-PRODUCT-DATA",
+      "estimatedTime": 1,
+      "priority": "P2"
+    }
+  ]
+}

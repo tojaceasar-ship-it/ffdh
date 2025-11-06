@@ -7,17 +7,30 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Idempotency store (in production, use Redis/DB)
+// Note: In serverless, Map is per-instance, so entries expire when function times out
 const processedEvents = new Map<string, number>();
 
-// Clean up old entries every 5 minutes
-setInterval(() => {
+// Clean up old entries on-demand (no setInterval for serverless compatibility)
+function cleanupOldEntries(): void {
   const now = Date.now();
+  const TTL = 60 * 60 * 1000; // 1 hour TTL
   for (const [key, timestamp] of processedEvents.entries()) {
-    if (now - timestamp > 60 * 60 * 1000) { // 1 hour TTL
+    if (now - timestamp > TTL) {
       processedEvents.delete(key);
     }
   }
-}, 5 * 60 * 1000);
+}
+
+// Check if event was already processed (and clean up old entries)
+function isEventProcessed(eventKey: string): boolean {
+  cleanupOldEntries(); // Clean up before checking
+  return processedEvents.has(eventKey);
+}
+
+// Mark event as processed
+function markEventProcessed(eventKey: string): void {
+  processedEvents.set(eventKey, Date.now());
+}
 
 interface WebhookVerificationResult {
   isValid: boolean;
@@ -191,16 +204,15 @@ export async function POST(
     const eventId = extractEventId(data, sourceLower);
     if (eventId) {
       const eventKey = `${sourceLower}:${eventId}`;
-      const now = Date.now();
 
-      // Check for duplicate processing
-      if (processedEvents.has(eventKey)) {
+      // Check for duplicate processing (with automatic cleanup)
+      if (isEventProcessed(eventKey)) {
         console.log(`[Webhook:${sourceLower}] Duplicate event ignored: ${eventId}`);
         return NextResponse.json({ status: "duplicate" }, { status: 200 });
       }
 
       // Mark as processed
-      processedEvents.set(eventKey, now);
+      markEventProcessed(eventKey);
     }
 
     // Log verification success (no sensitive data)

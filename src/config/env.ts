@@ -92,20 +92,20 @@ export function getEnvConfig(): EnvConfig {
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
 
     // PayPal
-    paypalClientId: process.env.VITE_PAYPAL_CLIENT_ID,
-    paypalSecret: process.env.VITE_PAYPAL_SECRET,
+    paypalClientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
+    paypalSecret: process.env.PAYPAL_SECRET,
 
     // Printful
     printfulApiKey: process.env.PRINTFUL_API_KEY,
-    printfulStoreId: process.env.VITE_PRINTFUL_STORE_ID,
+    printfulStoreId: process.env.PRINTFUL_STORE_ID,
 
     // OpenAI
     openaiApiKey: process.env.OPENAI_API_KEY,
 
     // Analytics
-    googleAnalyticsId: process.env.VITE_GOOGLE_ANALYTICS_ID,
-    ga4MeasurementId: process.env.VITE_GA4_MEASUREMENT_ID,
-    plausibleDomain: process.env.VITE_PLAUSIBLE_DOMAIN,
+    googleAnalyticsId: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
+    ga4MeasurementId: process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID,
+    plausibleDomain: process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN,
   }
 }
 

@@ -27,7 +27,18 @@ export async function POST(request: NextRequest) {
     // Initialize Stripe with validation
     const stripeKey = process.env.STRIPE_SECRET_KEY
     if (!stripeKey) {
-      console.warn('[Checkout] Stripe key missing, returning mock session')
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[Checkout] CRITICAL: Stripe secret key is required in production')
+        return NextResponse.json(
+          {
+            error: 'Payment service is not configured. Please contact support.',
+            code: 'STRIPE_NOT_CONFIGURED',
+          },
+          { status: 503 }
+        )
+      }
+      // Development fallback
+      console.warn('[Checkout] Stripe key missing, returning mock session (development only)')
       return NextResponse.json({
         success: true,
         sessionId: 'mock-session',

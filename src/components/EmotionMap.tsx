@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import EmotionMovementSimulator, { EmotionalAgentInstance } from '../utils/emotionMovement';
 import { EMOTIONAL_AGENTS } from '../config/emotionalAgents';
 
@@ -23,7 +23,7 @@ export default function EmotionMap({
   const [isPlaying, setIsPlaying] = useState(true);
   const [selectedAgent, setSelectedAgent] = useState<EmotionalAgentInstance | null>(null);
 
-  const drawAgent = useCallback((ctx: CanvasRenderingContext2D, agent: EmotionalAgentInstance) => {
+  const drawAgent = (ctx: CanvasRenderingContext2D, agent: EmotionalAgentInstance) => {
     const { position, visual, color, symbol, name } = agent;
 
     ctx.save();
@@ -147,7 +147,7 @@ export default function EmotionMap({
     }
 
     ctx.restore();
-  }, [showLabels]);
+  };
 
   useEffect(() => {
     if (!canvasRef.current) return;

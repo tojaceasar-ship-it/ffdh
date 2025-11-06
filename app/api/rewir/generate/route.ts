@@ -5,6 +5,7 @@ import autoScenes from '@/../content/auto_scenes.json'
 import { EmotionKey, emotionThemes, isEmotionKey } from '@/config/emotions'
 import { generateSceneNarrative } from '@/services/aiService'
 import { SceneReactionSummary } from '@/services/rewirService'
+import { createApiResponse, createApiError, createValidationError } from '@/utils/api-response'
 
 const requestSchema = z.object({
   prompt: z.string().min(3).max(200).optional(),
@@ -105,17 +106,17 @@ export async function POST(request: NextRequest) {
       reactionSummary: { ...DEFAULT_REACTIONS },
     }
 
-    return NextResponse.json({
-      success: true,
-      scene,
-    })
+    return NextResponse.json(createApiResponse(scene, 'Scene generated successfully'))
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ success: false, message: 'Invalid payload', errors: error.errors }, { status: 400 })
+      return NextResponse.json(createValidationError(error.errors), { status: 400 })
     }
 
     console.error('Error generating Rewir scene', error)
-    return NextResponse.json({ success: false, message: 'Failed to generate scene' }, { status: 500 })
+    return NextResponse.json(
+      createApiError('Failed to generate scene', 'SCENE_GENERATION_ERROR', error instanceof Error ? error.message : undefined),
+      { status: 500 }
+    )
   }
 }
 

@@ -1,0 +1,29 @@
+{
+  "colors": {
+    "brand": {
+      "primary": "#FFD700",
+      "secondary": "#00CED1",
+      "accent": "#FF4500",
+      "background": "#0a0a0a",
+      "foreground": "#ffffff"
+    }
+  },
+  "fonts": {
+    "primary": "Orbitron",
+    "body": "Inter",
+    "heading": "Rajdhani",
+    "accent": "Bungee"
+  },
+  "llm": {
+    "default": {
+      "temperature": 0.3,
+      "top_p": 0.9,
+      "max_tokens": 2048
+    },
+    "budget": {
+      "tokens_total_limit": 200000,
+      "abort_on_exceed": true
+    }
+  }
+}
+

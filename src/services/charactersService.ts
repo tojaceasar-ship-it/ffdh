@@ -1,4 +1,4 @@
-import { client } from '../lib/sanity';
+import { sanityClient } from '@/lib/sanity';
 
 interface Character {
   id: number;
@@ -45,7 +45,7 @@ export const charactersService = {
         } | order(powerLevel desc)
       `;
 
-      const characters: any[] = await client.fetch(query);
+      const characters: any[] = await sanityClient.fetch(query);
 
       // Transform Sanity data to match expected format with id
       return characters.map((char: any, index: number): Character => ({
@@ -77,7 +77,7 @@ export const charactersService = {
   getCharacterById: async (id: string): Promise<Character | null> => {
     try {
       const query = `*[_type == "characterProfile" && _id == $id][0]`;
-      const character: any = await client.fetch(query, { id });
+      const character: any = await sanityClient.fetch(query, { id });
       return character;
     } catch (error) {
       console.error('Error fetching character by ID from Sanity:', error);
