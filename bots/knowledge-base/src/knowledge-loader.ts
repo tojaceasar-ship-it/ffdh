@@ -1,5 +1,5 @@
 import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
 
 export interface KnowledgeBase {
   projectConcept: any;
@@ -20,9 +20,19 @@ export interface KnowledgeBase {
  * @returns KnowledgeBase object with all loaded data
  */
 export async function loadKnowledgeBase(
-  basePath: string = process.cwd()
+  basePath?: string
 ): Promise<KnowledgeBase> {
-  const kbPath = join(basePath, 'bots', 'knowledge-base', 'data');
+  // Znajdź root repo automatycznie jeśli nie podano basePath
+  let resolvedBasePath = basePath || process.cwd();
+  if (!basePath) {
+    while (resolvedBasePath && !existsSync(join(resolvedBasePath, 'pnpm-workspace.yaml'))) {
+      const parent = dirname(resolvedBasePath);
+      if (parent === resolvedBasePath) break;
+      resolvedBasePath = parent;
+    }
+  }
+
+  const kbPath = join(resolvedBasePath, 'bots', 'knowledge-base', 'data');
   
   const loadJson = (filePath: string): any => {
     const fullPath = join(kbPath, filePath);
