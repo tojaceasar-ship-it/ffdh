@@ -215,6 +215,84 @@ importers:
 
   apps/web: {}
 
+  bots/architect-bot:
+    dependencies:
+      '@ffdh/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.19.24
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.19.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
+
+  bots/budget-manager:
+    dependencies:
+      '@ffdh/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      fs-extra:
+        specifier: ^11.2.0
+        version: 11.3.2
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.19.24
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.19.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
+
+  bots/clarify-bot:
+    dependencies:
+      '@ffdh/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.19.24
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.19.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
+
   bots/code-bot:
     dependencies:
       '@ffdh/shared':
@@ -281,6 +359,59 @@ importers:
         specifier: ^5.3.0
         version: 5.9.3
 
+  bots/fallback-engine:
+    dependencies:
+      '@ffdh/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      fs-extra:
+        specifier: ^11.2.0
+        version: 11.3.2
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.19.24
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.19.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
+
+  bots/intake-bot:
+    dependencies:
+      '@ffdh/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.19.24
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.19.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
+
   bots/knowledge-base:
     dependencies:
       zod:
@@ -318,6 +449,84 @@ importers:
       typescript:
         specifier: ^5.3.0
         version: 5.9.3
+
+  bots/planner-bot:
+    dependencies:
+      '@ffdh/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.19.24
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.19.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
+
+  bots/report-bot:
+    dependencies:
+      '@ffdh/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.19.24
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.19.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
+
+  bots/review-bot:
+    dependencies:
+      '@ffdh/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      fs-extra:
+        specifier: ^11.2.0
+        version: 11.3.2
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.19.24
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.19.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
 
   bots/test-bot:
     dependencies:
@@ -12699,7 +12908,7 @@ snapshots:
       pathe: 1.1.2
       picocolors: 1.1.1
       sirv: 2.0.4
-      vitest: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.1)
+      vitest: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
 
   '@vitest/utils@1.6.1':
     dependencies:
@@ -18634,6 +18843,42 @@ snapshots:
       '@types/node': 20.19.24
       '@vitest/ui': 1.6.1(vitest@1.6.1)
       jsdom: 23.2.0
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
+  vitest@1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1):
+    dependencies:
+      '@vitest/expect': 1.6.1
+      '@vitest/runner': 1.6.1
+      '@vitest/snapshot': 1.6.1
+      '@vitest/spy': 1.6.1
+      '@vitest/utils': 1.6.1
+      acorn-walk: 8.3.4
+      chai: 4.5.0
+      debug: 4.4.3(supports-color@8.1.1)
+      execa: 8.0.1
+      local-pkg: 0.5.1
+      magic-string: 0.30.21
+      pathe: 1.1.2
+      picocolors: 1.1.1
+      std-env: 3.10.0
+      strip-literal: 2.1.1
+      tinybench: 2.9.0
+      tinypool: 0.8.4
+      vite: 5.4.21(@types/node@20.19.24)(terser@5.44.1)
+      vite-node: 1.6.1(@types/node@20.19.24)(terser@5.44.1)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 20.19.24
+      '@vitest/ui': 1.6.1(vitest@1.6.1)
+      jsdom: 27.1.0
     transitivePeerDependencies:
       - less
       - lightningcss

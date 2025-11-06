@@ -16,12 +16,20 @@
   },
   "llm": {
     "default": {
-      "temperature": 0.3,
+      "temperature": 0.2,
       "top_p": 0.9,
-      "max_tokens": 2048
+      "max_tokens": 512
     },
+    "modelPrimary": "gpt-4o-mini",
+    "fallbackModel": "gpt-4o",
+    "maxTokens": 512,
+    "temperature": 0.2,
+    "cache": true,
+    "dailyTokenCap": 6000,
+    "shortJsonOnly": true,
+    "preferRules": true,
     "budget": {
-      "tokens_total_limit": 200000,
+      "tokens_total_limit": 6000,
       "abort_on_exceed": true
     }
   }

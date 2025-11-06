@@ -11,6 +11,16 @@ import { ContentBot } from "../../content-bot/src/index.js";
 import { TestBot } from "../../test-bot/src/index.js";
 import { DeployBot } from "../../deploy-bot/src/index.js";
 
+// Smart Build Mode imports
+import { IntakeBotRegistration } from "../../intake-bot/src/index.js";
+import { ClarifyBotRegistration } from "../../clarify-bot/src/index.js";
+import { PlannerBotRegistration } from "../../planner-bot/src/index.js";
+import { ArchitectBotRegistration } from "../../architect-bot/src/index.js";
+import { BudgetManagerBot } from "../../budget-manager/src/index.js";
+import { FallbackEngineBot } from "../../fallback-engine/src/index.js";
+import { ReviewBotRegistration } from "../../review-bot/src/index.js";
+import { ReportBotRegistration } from "../../report-bot/src/index.js";
+
 export class Orchestrator {
   private kb = getKnowledgeAPI();
 
@@ -63,7 +73,7 @@ export class Orchestrator {
   }
 
   async start() {
-    // 0) Rejestr botów
+    // 0) Rejestr botów (Legacy Mode)
     registerBot(CodeBot);
     registerBot(ContentBot);
     registerBot(TestBot);
@@ -110,6 +120,298 @@ export class Orchestrator {
       state: e.state,
       ms: e.endedAt && e.startedAt ? (e.endedAt - e.startedAt) : "-"
     })));
+  }
+}
+
+// Smart Build Mode Orchestrator
+export class SmartOrchestrator extends Orchestrator {
+  private sessionId: string;
+  private budgetManager: any;
+  private fallbackEngine: any;
+
+  constructor(sessionId?: string) {
+    super();
+    this.sessionId = sessionId || `smart-${Date.now()}`;
+    this.initAsync();
+  }
+
+  private async initAsync() {
+    const budgetModule = await import("../../budget-manager/src/index.js");
+    const fallbackModule = await import("../../fallback-engine/src/index.js");
+
+    this.budgetManager = new budgetModule.BudgetManager(this.sessionId);
+    this.fallbackEngine = new fallbackModule.FallbackEngine();
+  }
+
+  async processSmartBuild(description: string) {
+    console.log('🚀 Starting Smart Build Mode...');
+
+    // Phase 1: Intake
+    console.log('📥 Phase 1: Intake...');
+    const projectDesc = await this.processIntake(description);
+
+    // Phase 2: Clarify
+    console.log('❓ Phase 2: Clarify...');
+    const needsClarification = await this.checkClarification(projectDesc);
+    if (needsClarification) {
+      console.log('❓ Clarification needed. Waiting for user input...');
+      return { status: 'needs_clarification', project: projectDesc };
+    }
+
+    // Phase 3: Architect
+    console.log('🏗️ Phase 3: Design Architecture...');
+    await this.designArchitecture(projectDesc);
+
+    // Phase 4: Plan DAG
+    console.log('📋 Phase 4: Plan DAG...');
+    const dagPlan = await this.createDAGPlan(projectDesc);
+
+    // Phase 5: Execute with budget control
+    console.log('⚙️ Phase 5: Execute with budget control...');
+    const result = await this.executeWithBudgetControl(dagPlan);
+
+    // Phase 6: Review
+    console.log('👁️ Phase 6: Local Review...');
+    const reviewResult = await this.performReview(result.sessionId);
+
+    // Phase 7: Report
+    console.log('📊 Phase 7: Generate Report...');
+    await this.generateReport(result.sessionId, result.results);
+
+    return {
+      ...result,
+      reviewDecision: reviewResult
+    };
+
+    return result;
+  }
+
+  private async processIntake(description: string) {
+    const intakeModule = await import("../../intake-bot/src/index.js");
+    registerBot(intakeModule.IntakeBotRegistration);
+
+    const intakeTask: TaskDefinition = {
+      id: `intake-${Date.now()}`,
+      version: '1.0.0',
+      name: 'intake.process',
+      priority: 'high',
+      concurrencyClass: 'cpu',
+      idempotencyKey: `intake-${this.sessionId}`,
+      inputsRef: description
+    };
+
+    const result = await this.executeSingleTask(intakeTask);
+    if (result.status !== 'success') {
+      throw new Error('Intake processing failed');
+    }
+
+    // Load processed project description
+    const fs = await import('fs-extra');
+    const sessionFile = `.ffdh/sessions/${intakeTask.idempotencyKey}.json`;
+    return await fs.readJson(sessionFile);
+  }
+
+  private async checkClarification(project: any) {
+    const clarifyModule = await import("../../clarify-bot/src/index.js");
+    registerBot(clarifyModule.ClarifyBotRegistration);
+
+    const clarifyTask: TaskDefinition = {
+      id: `clarify-${Date.now()}`,
+      version: '1.0.0',
+      name: 'clarify.needs',
+      priority: 'high',
+      concurrencyClass: 'cpu',
+      idempotencyKey: `clarify-${this.sessionId}`,
+      inputsRef: project
+    };
+
+    const result = await this.executeSingleTask(clarifyTask);
+    return result.status === 'success' && result.artifacts[0] === true;
+  }
+
+  private async createDAGPlan(project: any) {
+    const plannerModule = await import("../../planner-bot/src/index.js");
+    registerBot(plannerModule.PlannerBotRegistration);
+
+    const planTask: TaskDefinition = {
+      id: `plan-${Date.now()}`,
+      version: '1.0.0',
+      name: 'planner.create-dag',
+      priority: 'high',
+      concurrencyClass: 'cpu',
+      idempotencyKey: `plan-${this.sessionId}`,
+      inputsRef: project
+    };
+
+    const result = await this.executeSingleTask(planTask);
+    if (result.status !== 'success') {
+      throw new Error('DAG planning failed');
+    }
+
+    return result.artifacts[0];
+  }
+
+  private async executeWithBudgetControl(dagPlan: any) {
+    // Register all execution bots
+    registerBot(CodeBot);
+    registerBot(ContentBot);
+    registerBot(TestBot);
+    registerBot(DeployBot);
+    registerBot(this.budgetManager);
+    registerBot(this.fallbackEngine);
+
+    // Execute DAG respecting dependencies and budget
+    const results = [];
+    const completed = new Set<string>();
+
+    while (completed.size < dagPlan.tasks.length) {
+      // Find tasks ready to execute (all dependencies completed)
+      const readyTasks = dagPlan.tasks.filter((task: any) =>
+        !completed.has(task.id) &&
+        task.dependsOn.every((dep: string) => completed.has(dep))
+      );
+
+      if (readyTasks.length === 0) {
+        throw new Error('No tasks ready to execute - possible circular dependency');
+      }
+
+      // Execute ready tasks respecting budget
+      for (const task of readyTasks) {
+        // Check budget
+        const hasBudget = await this.budgetManager.checkTokens(task);
+        if (!hasBudget) {
+          console.warn('⚠️ Budget exceeded for task:', task.name);
+          // Try fallback if available
+          const shouldUseFallback = await this.budgetManager.shouldUseFallback(task);
+          if (shouldUseFallback && this.fallbackEngine.hasRule(task.name.replace('plan.', 'rule:'))) {
+            console.log('🔧 Using fallback for:', task.name);
+            task.fallbackRules = [task.name.replace('plan.', 'rule:')];
+          } else {
+            throw new Error(`Budget exceeded and no fallback available for: ${task.name}`);
+          }
+        }
+
+        const result = await this.executeSingleTask(task);
+        results.push(result);
+
+        if (result.status === 'success') {
+          completed.add(task.id);
+          await this.budgetManager.recordUsage(task, result.metrics?.tokensOut || task.estimatedTokens || 512);
+        } else {
+          throw new Error(`Task failed: ${task.name} - ${result.errorMsg}`);
+        }
+      }
+    }
+
+    return {
+      status: 'completed',
+      sessionId: this.sessionId,
+      results,
+      budgetUsed: await this.budgetManager.getSessionUsage()
+    };
+  }
+
+  private async executeSingleTask(task: TaskDefinition): Promise<TaskResult> {
+    return new Promise((resolve, reject) => {
+      this.taskQueue.enqueue(task, async (t) => {
+        try {
+          return await this.executeTask(t);
+        } catch (error) {
+          reject(error);
+        }
+      }).then(resolve).catch(reject);
+    });
+  }
+
+  private async designArchitecture(project: any) {
+    const architectModule = await import("../../architect-bot/src/index.js");
+    registerBot(architectModule.ArchitectBotRegistration);
+
+    const architectTask: TaskDefinition = {
+      id: `architect-${Date.now()}`,
+      version: '1.0.0',
+      name: 'architect.design',
+      priority: 'high',
+      concurrencyClass: 'cpu',
+      idempotencyKey: `architect-${this.sessionId}`,
+      inputsRef: project
+    };
+
+    const result = await this.executeSingleTask(architectTask);
+    if (result.status !== 'success') {
+      throw new Error('Architecture design failed');
+    }
+
+    return result.artifacts[0];
+  }
+
+  private async performReview(sessionId: string) {
+    const reviewModule = await import("../../review-bot/src/index.js");
+    registerBot(reviewModule.ReviewBotRegistration);
+
+    // Start review
+    const startTask: TaskDefinition = {
+      id: `review-start-${Date.now()}`,
+      version: '1.0.0',
+      name: 'review.start',
+      priority: 'high',
+      concurrencyClass: 'io',
+      idempotencyKey: `review-start-${sessionId}`,
+      inputsRef: sessionId
+    };
+
+    await this.executeSingleTask(startTask);
+
+    // Wait for review completion (simplified - in real implementation would be interactive)
+    const waitTask: TaskDefinition = {
+      id: `review-wait-${Date.now()}`,
+      version: '1.0.0',
+      name: 'review.wait',
+      priority: 'high',
+      concurrencyClass: 'io',
+      idempotencyKey: `review-wait-${sessionId}`,
+      inputsRef: sessionId,
+      timeoutMs: 60000 // 1 minute for demo
+    };
+
+    const reviewResult = await this.executeSingleTask(waitTask);
+
+    // Stop review
+    const stopTask: TaskDefinition = {
+      id: `review-stop-${Date.now()}`,
+      version: '1.0.0',
+      name: 'review.stop',
+      priority: 'normal',
+      concurrencyClass: 'io',
+      idempotencyKey: `review-stop-${sessionId}`,
+      inputsRef: sessionId
+    };
+
+    await this.executeSingleTask(stopTask);
+
+    return reviewResult;
+  }
+
+  private async generateReport(sessionId: string, results: any[]) {
+    const reportModule = await import("../../report-bot/src/index.js");
+    registerBot(reportModule.ReportBotRegistration);
+
+    const reportTask: TaskDefinition = {
+      id: `report-${Date.now()}`,
+      version: '1.0.0',
+      name: 'report.generate-session',
+      priority: 'normal',
+      concurrencyClass: 'cpu',
+      idempotencyKey: `report-${sessionId}`,
+      inputsRef: { sessionId, results }
+    };
+
+    const result = await this.executeSingleTask(reportTask);
+    if (result.status !== 'success') {
+      console.warn('Report generation failed, but continuing...');
+    }
+
+    return result;
   }
 }
 
