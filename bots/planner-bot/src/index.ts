@@ -5,14 +5,25 @@ export class PlannerBot {
   async createDAGPlan(project: ProjectDescription): Promise<DAGPlan> {
     const tasks: TaskDefinition[] = [];
 
-    // Use existing bot tasks that we know work - simplified linear execution for now
-    tasks.push(this.createTask('page.generate.lookbook', 'cpu', [], 300, ['rule:generate-navbar', 'rule:generate-hero']));
-    tasks.push(this.createTask('cms.seed.content', 'llm', [], 400)); // Remove dependency for now
-    tasks.push(this.createTask('test.smoke', 'io', [], 150)); // Remove dependency for now
-    tasks.push(this.createTask('deploy.vercel', 'io', [], 300)); // Remove dependency for now
+    // NEW: Generate UI from architecture (uses templates, minimal tokens)
+    tasks.push(this.createTask('ui.generate-from-architecture', 'cpu', [], 1));
+
+    // Content generation (only if needed)
+    if (project.description.toLowerCase().includes('content') || 
+        project.description.toLowerCase().includes('treści')) {
+      tasks.push(this.createTask('cms.seed.content', 'llm', [], 400));
+    }
+
+    // Testing (always)
+    tasks.push(this.createTask('test.smoke', 'io', [], 1));
+
+    // Deploy (conditional)
+    if (process.env.VERCEL_TOKEN) {
+      tasks.push(this.createTask('deploy.vercel', 'io', [], 1));
+    }
 
     // Calculate estimated tokens
-    const estimatedTokens = tasks.reduce((sum, task) => sum + (task.estimatedTokens || 512), 0);
+    const estimatedTokens = tasks.reduce((sum, task) => sum + (task.estimatedTokens || 0), 0);
 
     return {
       tasks,

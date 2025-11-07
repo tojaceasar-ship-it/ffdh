@@ -16,6 +16,7 @@ import { IntakeBotRegistration } from "../../intake-bot/src/index.js";
 import { ClarifyBotRegistration } from "../../clarify-bot/src/index.js";
 import { PlannerBotRegistration } from "../../planner-bot/src/index.js";
 import { ArchitectBotRegistration } from "../../architect-bot/src/index.js";
+import { UIBotRegistration } from "../../ui-bot/src/index.js";
 import { BudgetManagerBot } from "../../budget-manager/src/index.js";
 import { FallbackEngineBot } from "../../fallback-engine/src/index.js";
 import { ReviewBotRegistration } from "../../review-bot/src/index.js";
@@ -26,6 +27,7 @@ registerBot(IntakeBotRegistration);
 registerBot(ClarifyBotRegistration);
 registerBot(PlannerBotRegistration);
 registerBot(ArchitectBotRegistration);
+registerBot(UIBotRegistration);
 registerBot(BudgetManagerBot);
 registerBot(FallbackEngineBot);
 registerBot(ReviewBotRegistration);
@@ -181,6 +183,10 @@ export class SmartOrchestrator {
     console.log('📋 Phase 4: Plan DAG...');
     const dagPlan = await this.createDAGPlan(projectDesc);
 
+    // Phase 4.5: Generate UI from Architecture
+    console.log('🎨 Phase 4.5: Generate UI from Architecture...');
+    await this.generateUI(this.sessionId);
+
     // Phase 5: Execute with budget control
     console.log('⚙️ Phase 5: Execute with budget control...');
     const result = await this.executeWithBudgetControl(dagPlan);
@@ -197,8 +203,26 @@ export class SmartOrchestrator {
       ...result,
       reviewDecision: reviewResult
     };
+  }
 
-    return result;
+  private async generateUI(sessionId: string) {
+    const uiTask: TaskDefinition = {
+      id: `ui-${Date.now()}`,
+      version: '1.0.0',
+      name: 'ui.generate-from-architecture',
+      priority: 'high',
+      concurrencyClass: 'cpu',
+      idempotencyKey: `ui-${sessionId}`,
+      inputsRef: sessionId
+    };
+
+    const result = await this.executeSingleTask(uiTask);
+    if (result.status !== 'success') {
+      throw new Error('UI generation failed: ' + result.errorMsg);
+    }
+
+    console.log('UIBot: Generated files:', result.artifacts);
+    return result.artifacts;
   }
 
   private async processIntake(description: string) {
