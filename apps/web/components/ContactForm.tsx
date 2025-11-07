@@ -29,18 +29,21 @@ export default function ContactForm() {
 
   return (
     <section 
-      className="py-20 px-4"
+      className="min-h-screen py-20 px-4 flex items-center justify-center"
       style={{ backgroundColor: '#000000' }}
     >
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl w-full">
         <h2 
-          className="text-4xl font-bold mb-8 text-center"
-          style={{ color: '#FFD700' }}
+          className="text-5xl font-bold mb-12 text-center"
+          style={{ 
+            color: '#FFD700',
+            textShadow: '0 0 20px rgba(255, 215, 0, 0.5)'
+          }}
         >
           Kontakt
         </h2>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div>
             <label 
               className="block mb-2 font-semibold"
@@ -53,9 +56,9 @@ export default function ContactForm() {
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg border-2"
+              className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all"
               style={{ 
-                backgroundColor: '#000000',
+                backgroundColor: '#1a1a1a',
                 borderColor: '#00CED1',
                 color: '#ffffff'
               }}
@@ -74,9 +77,9 @@ export default function ContactForm() {
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg border-2"
+              className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all"
               style={{ 
-                backgroundColor: '#000000',
+                backgroundColor: '#1a1a1a',
                 borderColor: '#00CED1',
                 color: '#ffffff'
               }}
@@ -95,9 +98,9 @@ export default function ContactForm() {
               rows={6}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg border-2"
+              className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all"
               style={{ 
-                backgroundColor: '#000000',
+                backgroundColor: '#1a1a1a',
                 borderColor: '#00CED1',
                 color: '#ffffff'
               }}
@@ -107,10 +110,11 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={status === 'sending'}
-            className="w-full px-8 py-4 text-lg font-bold rounded-lg transition-all hover:scale-105"
+            className="w-full px-8 py-4 text-lg font-bold rounded-lg transition-all hover:scale-105 hover:shadow-2xl"
             style={{ 
               backgroundColor: '#FF4500',
-              color: '#000000'
+              color: '#000000',
+              boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
             }}
           >
             {status === 'sending' ? 'Wysyłanie...' : 'Wyślij Wiadomość'}
