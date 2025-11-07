@@ -20,7 +20,12 @@ const nextConfig = {
       },
     ],
     formats: ['image/webp', 'image/avif'],
+    unoptimized: true, // Required for static export
   },
+  output: 'export', // Enable static export for GitHub Pages
+  trailingSlash: true, // Required for GitHub Pages
+  basePath: '/ffdh',
+  assetPrefix: '/ffdh/',
   async headers() {
     return [
       {

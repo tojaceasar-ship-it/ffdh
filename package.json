@@ -7,7 +7,8 @@
     "node": ">=20.11"
   },
   "scripts": {
-    "build": "turbo run build --cache-dir=.turbo",
+    "build": "next build",
+    "build:turbo": "turbo run build --cache-dir=.turbo",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
