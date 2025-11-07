@@ -90,9 +90,9 @@ export class UIBot {
     const hasContact = components.includes('ContactForm');
 
     let imports = `import Link from 'next/link';\n`;
-    if (hasHero) imports += `import HeroSection from '@/components/HeroSection';\n`;
-    if (hasGallery) imports += `import GalleryGrid from '@/components/GalleryGrid';\n`;
-    if (hasContact) imports += `import ContactForm from '@/components/ContactForm';\n`;
+    if (hasHero) imports += `import HeroSection from '../components/HeroSection';\n`;
+    if (hasGallery) imports += `import GalleryGrid from '../components/GalleryGrid';\n`;
+    if (hasContact) imports += `import ContactForm from '../components/ContactForm';\n`;
 
     return `${imports}
 export default function HomePage() {
@@ -107,7 +107,7 @@ export default function HomePage() {
   }
 
   private generateContactPage(colors: any): string {
-    return `import ContactForm from '@/components/ContactForm';
+    return `import ContactForm from '../../components/ContactForm';
 
 export default function ContactPage() {
   return (

@@ -114,6 +114,14 @@ export class ArchitectBot {
         background: '#0a0a0a',
         foreground: '#ffffff'
       };
+    } else if (project.style?.includes('dark')) {
+      colors = {
+        primary: '#FFD700',
+        secondary: '#00CED1',
+        accent: '#FF4500',
+        background: '#000000',
+        foreground: '#ffffff'
+      };
     }
 
     const typography = {
