@@ -1,0 +1,1 @@
+{"version":3,"file":"locks.d.ts","sourceRoot":"","sources":["locks.ts"],"names":[],"mappings":"AAUA,MAAM,WAAW,IAAI;IACnB,GAAG,EAAE,MAAM,CAAC;IACZ,OAAO,EAAE,MAAM,OAAO,CAAC,IAAI,CAAC,CAAC;CAC9B;AAED,wBAAsB,WAAW,CAC/B,GAAG,EAAE,MAAM,EACX,MAAM,SAAK,GACV,OAAO,CAAC,IAAI,CAAC,CAuCf"}

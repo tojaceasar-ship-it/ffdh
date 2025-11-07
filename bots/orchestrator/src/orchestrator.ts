@@ -3,6 +3,7 @@ import { withIdempotency } from "./task-adapter.js";
 import { executeTask, registerBot } from "./bot-manager.js";
 import { markQueued, markRunning, markDone, snapshot } from "./progress-tracker.js";
 import { getKnowledgeAPI } from "../../knowledge-base/src/knowledge-loader.js";
+import { SupervisorAgent } from "../../agents/supervisor/src/index.js";
 import { TaskDefinition, TaskResult } from "../../../shared/types/task.js";
 
 // 1) Rejestruj boty dostępne w systemie (na start: CodeBot)
@@ -21,6 +22,7 @@ import { BudgetManagerBot } from "../../budget-manager/src/index.js";
 import { FallbackEngineBot } from "../../fallback-engine/src/index.js";
 import { ReviewBotRegistration } from "../../review-bot/src/index.js";
 import { ReportBotRegistration } from "../../report-bot/src/index.js";
+import { SupervisorAgentRegistration } from "../../agents/supervisor/src/index.js";
 
 // Register all bots at module load time
 registerBot(IntakeBotRegistration);
@@ -32,6 +34,7 @@ registerBot(BudgetManagerBot);
 registerBot(FallbackEngineBot);
 registerBot(ReviewBotRegistration);
 registerBot(ReportBotRegistration);
+registerBot(SupervisorAgentRegistration);
 
 // Register legacy bots for execution
 registerBot(CodeBot);
@@ -287,50 +290,18 @@ export class SmartOrchestrator {
   }
 
   private async executeWithBudgetControl(dagPlan: any) {
-    // All bots are already registered globally
-
-    // Execute DAG respecting dependencies and budget
-    const results = [];
-    const completed = new Set<string>();
-
-    while (completed.size < dagPlan.tasks.length) {
-      // Find tasks ready to execute (all dependencies completed)
-      const readyTasks = dagPlan.tasks.filter((task: any) =>
-        !completed.has(task.id) &&
-        task.dependsOn.every((dep: string) => completed.has(dep))
-      );
-
-      if (readyTasks.length === 0) {
-        throw new Error('No tasks ready to execute - possible circular dependency');
-      }
-
-      // Execute ready tasks respecting budget
-      for (const task of readyTasks) {
-        // Check budget
-        const hasBudget = await this.budgetManager.checkTokens(task);
-        if (!hasBudget) {
-          console.warn('⚠️ Budget exceeded for task:', task.name);
-          // Try fallback if available
-          const shouldUseFallback = await this.budgetManager.shouldUseFallback(task);
-          if (shouldUseFallback && this.fallbackEngine.hasRule(task.name.replace('plan.', 'rule:'))) {
-            console.log('🔧 Using fallback for:', task.name);
-            task.fallbackRules = [task.name.replace('plan.', 'rule:')];
-          } else {
-            throw new Error(`Budget exceeded and no fallback available for: ${task.name}`);
-          }
-        }
-
-        const result = await this.executeSingleTask(task);
-        results.push(result);
-
-        if (result.status === 'success') {
-          completed.add(task.id);
-          await this.budgetManager.recordUsage(task, result.metrics?.tokensOut || task.estimatedTokens || 512);
-        } else {
-          throw new Error(`Task failed: ${task.name} - ${result.errorMsg}`);
-        }
-      }
-    }
+    // Use SupervisorAgent for intelligent execution
+    const supervisor = new SupervisorAgent(this.sessionId);
+    
+    // Plan execution
+    const plan = await supervisor.plan(dagPlan);
+    console.log(`📋 Supervisor plan: ${plan.tasks.length} tasks, strategy: ${plan.strategy}`);
+    
+    // Get budget remaining
+    const budgetRemaining = await this.budgetManager.getRemainingBudget();
+    
+    // Execute plan with supervision
+    const results = await supervisor.executePlan(plan, budgetRemaining);
 
     return {
       status: 'completed',
