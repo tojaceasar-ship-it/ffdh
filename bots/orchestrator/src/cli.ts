@@ -38,15 +38,18 @@ async function main() {
       const result = await smartOrchestrator.processSmartBuild(description);
 
       if (result.status === 'needs_clarification') {
-        console.log('❓ Clarification needed for project:', result.project.title);
+        console.log('❓ Clarification needed for project:', (result as any).project?.title || 'Unknown');
         console.log('Please provide additional details and run again.');
         process.exit(1);
       }
 
-      console.log('✅ Smart Build completed successfully!');
-      console.log(`📊 Session: ${result.sessionId}`);
-      console.log(`💰 Budget used: ${result.budgetUsed} tokens`);
-      console.log(`📋 Tasks completed: ${result.results.length}`);
+      if (result.status === 'completed') {
+        const completedResult = result as any;
+        console.log('✅ Smart Build completed successfully!');
+        console.log(`📊 Session: ${completedResult.sessionId}`);
+        console.log(`💰 Budget used: ${completedResult.budgetUsed} tokens`);
+        console.log(`📋 Tasks completed: ${completedResult.results?.length || 0}`);
+      }
 
     } catch (error) {
       console.error('❌ Smart Build failed:', error);

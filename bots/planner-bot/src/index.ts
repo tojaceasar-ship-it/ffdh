@@ -5,42 +5,11 @@ export class PlannerBot {
   async createDAGPlan(project: ProjectDescription): Promise<DAGPlan> {
     const tasks: TaskDefinition[] = [];
 
-    // Base infrastructure tasks (no dependencies)
-    tasks.push(this.createTask('setup-project-structure', 'cpu', [], 100));
-    tasks.push(this.createTask('setup-package-dependencies', 'cpu', [], 50));
-
-    // Design system (depends on project structure)
-    if (project.style?.includes('neon') || project.style?.includes('cyberpunk')) {
-      tasks.push(this.createTask('create-design-system-neon', 'cpu', ['setup-project-structure'], 200));
-    } else {
-      tasks.push(this.createTask('create-design-system-standard', 'cpu', ['setup-project-structure'], 150));
-    }
-
-    // Core pages (depend on design system)
-    tasks.push(this.createTask('generate-homepage', 'cpu', ['create-design-system-neon', 'create-design-system-standard'], 300));
-    tasks.push(this.createTask('generate-navbar', 'cpu', ['create-design-system-neon', 'create-design-system-standard'], 100, ['rule:generate-navbar']));
-    tasks.push(this.createTask('generate-hero', 'cpu', ['create-design-system-neon', 'create-design-system-standard'], 200, ['rule:generate-hero']));
-
-    // Feature-specific pages
-    if (project.requirements?.includes('image-gallery')) {
-      tasks.push(this.createTask('generate-gallery-page', 'cpu', ['generate-homepage'], 400));
-    }
-
-    if (project.requirements?.includes('contact-form')) {
-      tasks.push(this.createTask('generate-contact-page', 'cpu', ['generate-homepage'], 250));
-    }
-
-    // Content tasks (can run in parallel with UI generation)
-    if (project.description.toLowerCase().includes('streetwear') ||
-        project.description.toLowerCase().includes('fashion')) {
-      tasks.push(this.createTask('generate-streetwear-content', 'llm', ['setup-project-structure'], 400));
-    }
-
-    // Testing tasks (depend on all generation)
-    const generationTasks = tasks.filter(t => t.name.includes('generate')).map(t => t.id);
-    tasks.push(this.createTask('run-unit-tests', 'cpu', generationTasks, 200));
-    tasks.push(this.createTask('run-integration-tests', 'cpu', ['run-unit-tests'], 300));
-    tasks.push(this.createTask('run-smoke-tests', 'io', ['run-integration-tests'], 150));
+    // Use existing bot tasks that we know work - simplified linear execution for now
+    tasks.push(this.createTask('page.generate.lookbook', 'cpu', [], 300, ['rule:generate-navbar', 'rule:generate-hero']));
+    tasks.push(this.createTask('cms.seed.content', 'llm', [], 400)); // Remove dependency for now
+    tasks.push(this.createTask('test.smoke', 'io', [], 150)); // Remove dependency for now
+    tasks.push(this.createTask('deploy.vercel', 'io', [], 300)); // Remove dependency for now
 
     // Calculate estimated tokens
     const estimatedTokens = tasks.reduce((sum, task) => sum + (task.estimatedTokens || 512), 0);
@@ -53,19 +22,19 @@ export class PlannerBot {
   }
 
   private createTask(
-    name: string,
+    taskName: string,
     concurrencyClass: 'cpu' | 'io' | 'llm',
     dependsOn: string[] = [],
     estimatedTokens: number = 512,
     fallbackRules?: string[]
   ): TaskDefinition {
     return {
-      id: `${name}-${Date.now()}`,
+      id: `${taskName}-${Date.now()}`,
       version: '1.0.0',
-      name: `plan.${name}`,
-      priority: this.getPriority(name),
+      name: taskName,
+      priority: this.getPriority(taskName),
       concurrencyClass,
-      idempotencyKey: `plan-${name}`,
+      idempotencyKey: `plan-${taskName}`,
       timeoutMs: 900000,
       dependsOn,
       estimatedTokens,

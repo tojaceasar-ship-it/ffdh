@@ -11,7 +11,7 @@ import { ContentBot } from "../../content-bot/src/index.js";
 import { TestBot } from "../../test-bot/src/index.js";
 import { DeployBot } from "../../deploy-bot/src/index.js";
 
-// Smart Build Mode imports
+// Smart Build Mode imports - synchronous registration
 import { IntakeBotRegistration } from "../../intake-bot/src/index.js";
 import { ClarifyBotRegistration } from "../../clarify-bot/src/index.js";
 import { PlannerBotRegistration } from "../../planner-bot/src/index.js";
@@ -20,6 +20,22 @@ import { BudgetManagerBot } from "../../budget-manager/src/index.js";
 import { FallbackEngineBot } from "../../fallback-engine/src/index.js";
 import { ReviewBotRegistration } from "../../review-bot/src/index.js";
 import { ReportBotRegistration } from "../../report-bot/src/index.js";
+
+// Register all bots at module load time
+registerBot(IntakeBotRegistration);
+registerBot(ClarifyBotRegistration);
+registerBot(PlannerBotRegistration);
+registerBot(ArchitectBotRegistration);
+registerBot(BudgetManagerBot);
+registerBot(FallbackEngineBot);
+registerBot(ReviewBotRegistration);
+registerBot(ReportBotRegistration);
+
+// Register legacy bots for execution
+registerBot(CodeBot);
+registerBot(ContentBot);
+registerBot(TestBot);
+registerBot(DeployBot);
 
 export class Orchestrator {
   private kb = getKnowledgeAPI();
@@ -124,13 +140,12 @@ export class Orchestrator {
 }
 
 // Smart Build Mode Orchestrator
-export class SmartOrchestrator extends Orchestrator {
+export class SmartOrchestrator {
   private sessionId: string;
   private budgetManager: any;
   private fallbackEngine: any;
 
   constructor(sessionId?: string) {
-    super();
     this.sessionId = sessionId || `smart-${Date.now()}`;
     this.initAsync();
   }
@@ -187,8 +202,6 @@ export class SmartOrchestrator extends Orchestrator {
   }
 
   private async processIntake(description: string) {
-    const intakeModule = await import("../../intake-bot/src/index.js");
-    registerBot(intakeModule.IntakeBotRegistration);
 
     const intakeTask: TaskDefinition = {
       id: `intake-${Date.now()}`,
@@ -208,12 +221,10 @@ export class SmartOrchestrator extends Orchestrator {
     // Load processed project description
     const fs = await import('fs-extra');
     const sessionFile = `.ffdh/sessions/${intakeTask.idempotencyKey}.json`;
-    return await fs.readJson(sessionFile);
+    return await fs.default.readJson(sessionFile);
   }
 
   private async checkClarification(project: any) {
-    const clarifyModule = await import("../../clarify-bot/src/index.js");
-    registerBot(clarifyModule.ClarifyBotRegistration);
 
     const clarifyTask: TaskDefinition = {
       id: `clarify-${Date.now()}`,
@@ -222,7 +233,7 @@ export class SmartOrchestrator extends Orchestrator {
       priority: 'high',
       concurrencyClass: 'cpu',
       idempotencyKey: `clarify-${this.sessionId}`,
-      inputsRef: project
+      inputsRef: JSON.stringify(project)
     };
 
     const result = await this.executeSingleTask(clarifyTask);
@@ -230,8 +241,6 @@ export class SmartOrchestrator extends Orchestrator {
   }
 
   private async createDAGPlan(project: any) {
-    const plannerModule = await import("../../planner-bot/src/index.js");
-    registerBot(plannerModule.PlannerBotRegistration);
 
     const planTask: TaskDefinition = {
       id: `plan-${Date.now()}`,
@@ -240,7 +249,7 @@ export class SmartOrchestrator extends Orchestrator {
       priority: 'high',
       concurrencyClass: 'cpu',
       idempotencyKey: `plan-${this.sessionId}`,
-      inputsRef: project
+      inputsRef: JSON.stringify(project)
     };
 
     const result = await this.executeSingleTask(planTask);
@@ -248,17 +257,13 @@ export class SmartOrchestrator extends Orchestrator {
       throw new Error('DAG planning failed');
     }
 
-    return result.artifacts[0];
+    return typeof result.artifacts[0] === 'string'
+      ? JSON.parse(result.artifacts[0])
+      : result.artifacts[0];
   }
 
   private async executeWithBudgetControl(dagPlan: any) {
-    // Register all execution bots
-    registerBot(CodeBot);
-    registerBot(ContentBot);
-    registerBot(TestBot);
-    registerBot(DeployBot);
-    registerBot(this.budgetManager);
-    registerBot(this.fallbackEngine);
+    // All bots are already registered globally
 
     // Execute DAG respecting dependencies and budget
     const results = [];
@@ -313,9 +318,9 @@ export class SmartOrchestrator extends Orchestrator {
 
   private async executeSingleTask(task: TaskDefinition): Promise<TaskResult> {
     return new Promise((resolve, reject) => {
-      this.taskQueue.enqueue(task, async (t) => {
+      taskQueue.enqueue(task, async (t) => {
         try {
-          return await this.executeTask(t);
+          return await executeTask(t);
         } catch (error) {
           reject(error);
         }
@@ -324,8 +329,6 @@ export class SmartOrchestrator extends Orchestrator {
   }
 
   private async designArchitecture(project: any) {
-    const architectModule = await import("../../architect-bot/src/index.js");
-    registerBot(architectModule.ArchitectBotRegistration);
 
     const architectTask: TaskDefinition = {
       id: `architect-${Date.now()}`,
@@ -334,7 +337,7 @@ export class SmartOrchestrator extends Orchestrator {
       priority: 'high',
       concurrencyClass: 'cpu',
       idempotencyKey: `architect-${this.sessionId}`,
-      inputsRef: project
+      inputsRef: JSON.stringify(project)
     };
 
     const result = await this.executeSingleTask(architectTask);
@@ -346,8 +349,6 @@ export class SmartOrchestrator extends Orchestrator {
   }
 
   private async performReview(sessionId: string) {
-    const reviewModule = await import("../../review-bot/src/index.js");
-    registerBot(reviewModule.ReviewBotRegistration);
 
     // Start review
     const startTask: TaskDefinition = {
@@ -393,8 +394,6 @@ export class SmartOrchestrator extends Orchestrator {
   }
 
   private async generateReport(sessionId: string, results: any[]) {
-    const reportModule = await import("../../report-bot/src/index.js");
-    registerBot(reportModule.ReportBotRegistration);
 
     const reportTask: TaskDefinition = {
       id: `report-${Date.now()}`,
@@ -403,7 +402,7 @@ export class SmartOrchestrator extends Orchestrator {
       priority: 'normal',
       concurrencyClass: 'cpu',
       idempotencyKey: `report-${sessionId}`,
-      inputsRef: { sessionId, results }
+      inputsRef: JSON.stringify({ sessionId, results })
     };
 
     const result = await this.executeSingleTask(reportTask);

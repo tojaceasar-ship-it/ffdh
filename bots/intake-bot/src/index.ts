@@ -111,12 +111,26 @@ export const IntakeBotRegistration: BotRegistration = {
     }
 
     try {
+      console.log('IntakeBot: Processing description:', task.inputsRef);
       const description = await intakeBot.processDescription(task.inputsRef as string);
+      console.log('IntakeBot: Processed description:', description);
 
       // Save to session file
-      const sessionFile = `.ffdh/sessions/${task.idempotencyKey}.json`;
-      await import('fs-extra').then(fs => fs.ensureDir('.ffdh/sessions'));
-      await import('fs-extra').then(fs => fs.writeJson(sessionFile, description));
+      const path = await import('path');
+      const projectRoot = process.cwd().split('bots')[0];
+      const sessionFile = path.default.join(projectRoot, '.ffdh', 'sessions', `${task.idempotencyKey}.json`);
+      console.log('IntakeBot: Saving to:', sessionFile);
+      try {
+        const fs = await import('fs-extra');
+        const sessionDir = path.default.join(projectRoot, '.ffdh', 'sessions');
+        console.log('IntakeBot: Creating directory:', sessionDir);
+        await fs.default.ensureDir(sessionDir);
+        await fs.default.writeJson(sessionFile, description);
+        console.log('IntakeBot: File saved successfully');
+      } catch (error) {
+        console.error('IntakeBot: Failed to save file:', error);
+        throw error;
+      }
 
       return {
         id: task.id,

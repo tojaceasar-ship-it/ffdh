@@ -181,16 +181,23 @@ export const ArchitectBotRegistration: BotRegistration = {
     }
 
     try {
+      console.log('ArchitectBot: Processing project:', task.inputsRef);
       const project = typeof task.inputsRef === 'string'
         ? JSON.parse(task.inputsRef)
         : task.inputsRef as ProjectDescription;
+      console.log('ArchitectBot: Parsed project:', project);
       const architecture = await architectBot.designArchitecture(project);
+      console.log('ArchitectBot: Generated architecture:', architecture);
 
       // Save architecture plan
+      const path = await import('path');
       const fs = await import('fs-extra');
-      const sessionFile = `.ffdh/architectures/${task.idempotencyKey}.json`;
-      await fs.ensureDir('.ffdh/architectures');
-      await fs.writeJson(sessionFile, architecture);
+      const projectRoot = process.cwd().split('bots')[0];
+      const sessionFile = path.default.join(projectRoot, '.ffdh', 'architectures', `${task.idempotencyKey}.json`);
+      const architecturesDir = path.default.join(projectRoot, '.ffdh', 'architectures');
+      console.log('ArchitectBot: Saving architecture to:', sessionFile);
+      await fs.default.ensureDir(architecturesDir);
+      await fs.default.writeJson(sessionFile, architecture);
 
       return {
         id: task.id,
