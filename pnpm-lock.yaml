@@ -138,7 +138,7 @@ importers:
         specifier: ^14.5.0
         version: 14.6.1(@testing-library/dom@9.3.4)
       '@types/node':
-        specifier: ^20.0.0
+        specifier: ^20.19.24
         version: 20.19.24
       '@types/pg':
         specifier: ^8.10.0
@@ -204,7 +204,7 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0
       typescript:
-        specifier: ^5.3.0
+        specifier: ^5.9.3
         version: 5.9.3
       vite-tsconfig-paths:
         specifier: ^5.1.4
@@ -12936,7 +12936,7 @@ snapshots:
       pathe: 1.1.2
       picocolors: 1.1.1
       sirv: 2.0.4
-      vitest: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@27.1.0)(terser@5.44.1)
+      vitest: 1.6.1(@types/node@20.19.24)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.1)
 
   '@vitest/utils@1.6.1':
     dependencies:
