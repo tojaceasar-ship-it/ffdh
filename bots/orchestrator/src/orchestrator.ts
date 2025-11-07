@@ -23,6 +23,10 @@ import { FallbackEngineBot } from "../../fallback-engine/src/index.js";
 import { ReviewBotRegistration } from "../../review-bot/src/index.js";
 import { ReportBotRegistration } from "../../report-bot/src/index.js";
 import { SupervisorAgentRegistration } from "../../agents/supervisor/src/index.js";
+import { VisualLeadBotRegistration } from "../../agents/visual-lead-bot/src/index.js";
+import { CodeLeadBotRegistration } from "../../agents/code-lead-bot/src/index.js";
+import { QACompositeBotRegistration } from "../../agents/qa-composite-bot/src/index.js";
+import { CopywriterBotRegistration } from "../../agents/copywriter-bot/src/index.js";
 
 // Register all bots at module load time
 registerBot(IntakeBotRegistration);
@@ -35,6 +39,10 @@ registerBot(FallbackEngineBot);
 registerBot(ReviewBotRegistration);
 registerBot(ReportBotRegistration);
 registerBot(SupervisorAgentRegistration);
+registerBot(VisualLeadBotRegistration);
+registerBot(CodeLeadBotRegistration);
+registerBot(QACompositeBotRegistration);
+registerBot(CopywriterBotRegistration);
 
 // Register legacy bots for execution
 registerBot(CodeBot);

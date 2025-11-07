@@ -1,0 +1,21 @@
+{
+  "name": "@ffdh/visual-lead-bot",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "tsx test/*.test.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "zod": "^3.25.76",
+    "openai": "^4.104.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.1",
+    "@types/node": "^20.11.30",
+    "typescript": "^5.3.3"
+  }
+}
+
